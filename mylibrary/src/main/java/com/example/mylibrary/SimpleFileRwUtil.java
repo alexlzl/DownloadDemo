@@ -1,10 +1,5 @@
 package com.example.mylibrary;
 
-/**
- * @author lzl
- * @ describe
- * @ time 2020/11/6 16:31
- */
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -19,8 +14,11 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
- * 简单文件读写的工具类(使用字节流工具类实现)
+ * @author lzl
+ * @ describe  简单文件读写的工具类(使用字节流工具类实现)
+ * @ time 2020/11/6 16:31
  */
+
 public class SimpleFileRwUtil {
 
     /*
