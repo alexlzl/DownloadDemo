@@ -2,6 +2,8 @@ package com.example.downloaddemo;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,10 +14,14 @@ import android.widget.Toast;
 import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.task.DownloadTask;
+import com.example.mylibrary.FileByteManagerUtils;
 import com.example.mylibrary.FileManagerUtils;
 import com.example.mylibrary.PermissionsManagerUtils;
 import com.example.mylibrary.SDCardManagerUtils;
 import com.example.mylibrary.Url;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -277,5 +283,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void saveByte(View view ){
+        FileByteManagerUtils.writeBytesToFile(new File(  SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic/test.jpg"),bitmapToByte(R.drawable.test),true);
+
+    }
+
+    public  byte[] bitmapToByte(int pic) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), pic);
+        //将Bitmap转换成字符串
+        String string = null;
+        ByteArrayOutputStream bStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
+        byte[] bytes = bStream.toByteArray();
+//        string = Base64.encodeToString(bytes, Base64.DEFAULT);
+        return bytes;
     }
 }
