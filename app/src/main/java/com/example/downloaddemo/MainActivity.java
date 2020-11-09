@@ -293,11 +293,10 @@ public class MainActivity extends AppCompatActivity {
     public  byte[] bitmapToByte(int pic) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), pic);
         //将Bitmap转换成字符串
-        String string = null;
+//        String string = null;
         ByteArrayOutputStream bStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, bStream);
-        byte[] bytes = bStream.toByteArray();
 //        string = Base64.encodeToString(bytes, Base64.DEFAULT);
-        return bytes;
+        return bStream.toByteArray();
     }
 }
