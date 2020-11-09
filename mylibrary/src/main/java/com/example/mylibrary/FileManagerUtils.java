@@ -9,10 +9,10 @@ import java.io.IOException;
 
 /**
  * @author lzl
- * @ describe
+ * @ describe 文件创建管理
  * @ time 2020/11/5 17:46
  */
-public class FileUtils {
+public class FileManagerUtils {
 
     private static final String TAG = "FileUtils";
 

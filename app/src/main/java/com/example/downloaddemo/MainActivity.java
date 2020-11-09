@@ -12,9 +12,9 @@ import android.widget.Toast;
 import com.arialyy.annotations.Download;
 import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.task.DownloadTask;
-import com.example.mylibrary.FileUtils;
-import com.example.mylibrary.PermissionsUtils;
-import com.example.mylibrary.SDUtils;
+import com.example.mylibrary.FileManagerUtils;
+import com.example.mylibrary.PermissionsManagerUtils;
+import com.example.mylibrary.SDCardManagerUtils;
 import com.example.mylibrary.Url;
 
 import androidx.annotation.NonNull;
@@ -44,12 +44,12 @@ public class MainActivity extends AppCompatActivity {
     public void singleDownload(View view) {
         stopSingleDownloadBtn.setTag("start");
         Toast.makeText(this, "下载apk", Toast.LENGTH_LONG).show();
-        PermissionsUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsUtils.IPermissionsResult() {
+        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                String fileName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk/test.apk";
-                String folderName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk";
-                FileUtils.createDir(folderName);
+                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk/test.apk";
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk";
+                FileManagerUtils.createDir(folderName);
                 apkTaskId = Aria.download(this)
                         .load(Url.URL1)     //读取下载地址
                         .setFilePath(fileName) //设置文件保存的完整路径
@@ -69,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void singleDownloadVideo(View view) {
         Toast.makeText(this, "下载视频", Toast.LENGTH_LONG).show();
-        PermissionsUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsUtils.IPermissionsResult() {
+        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                String fileName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video/test.mp4";
-                String folderName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video";
-                FileUtils.createDir(folderName);
+                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video/test.mp4";
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video";
+                FileManagerUtils.createDir(folderName);
                 videoTaskId = Aria.download(this)
                         .load(Url.URL2)     //读取下载地址
                         .setFilePath(fileName) //设置文件保存的完整路径
@@ -92,12 +92,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void singleDownloadPic(View view) {
         Toast.makeText(this, "下载图片", Toast.LENGTH_LONG).show();
-        PermissionsUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsUtils.IPermissionsResult() {
+        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                String fileName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic/gome.jpg";
-                String folderName = SDUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic";
-                FileUtils.createDir(folderName);
+                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic/gome.jpg";
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic";
+                FileManagerUtils.createDir(folderName);
                 picTaskId = Aria.download(this)
                         .load(Url.URL3)     //读取下载地址
                         .setFilePath(fileName) //设置文件保存的完整路径
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionsUtils.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        PermissionsManagerUtils.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     public void multiDownload(View view) {

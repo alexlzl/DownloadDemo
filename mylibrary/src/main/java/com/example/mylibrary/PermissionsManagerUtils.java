@@ -18,23 +18,23 @@ import androidx.core.content.ContextCompat;
 
 /**
  * @author lzl
- * @ describe
+ * @ describe 权限管理
  * @ time 2020/11/5 17:32
  */
-public class PermissionsUtils {
+public class PermissionsManagerUtils {
 
     private final int mRequestCode = 100;//权限请求码
     public static boolean showSystemSetting = true;
 
-    private PermissionsUtils() {
+    private PermissionsManagerUtils() {
     }
 
-    private static PermissionsUtils permissionsUtils;
+    private static PermissionsManagerUtils permissionsUtils;
     private IPermissionsResult mPermissionsResult;
 
-    public static PermissionsUtils getInstance() {
+    public static PermissionsManagerUtils getInstance() {
         if (permissionsUtils == null) {
-            permissionsUtils = new PermissionsUtils();
+            permissionsUtils = new PermissionsManagerUtils();
         }
         return permissionsUtils;
     }

@@ -19,7 +19,7 @@ import java.util.Arrays;
  * @ time 2020/11/6 16:31
  */
 
-public class SimpleFileRwUtil {
+public class FileByteManagerUtils {
 
     /*
         关于文件读写的一点理解
@@ -50,15 +50,13 @@ public class SimpleFileRwUtil {
     public final static int buffer_size = 5120;
 
     /**
-     * 以指定编码格式解码从文件中读取的字节流
-     *
      * @param filePath    要操作的文件路径
      * @param charsetName 指定编码格式
      * @return
      */
     public static String readStringFromFile(String filePath, String charsetName) throws Exception {
         File file = new File(filePath);
-        return SimpleFileRwUtil.readStringFromFile(file, charsetName);
+        return FileByteManagerUtils.readStringFromFile(file, charsetName);
     }
 
     /**
@@ -70,15 +68,15 @@ public class SimpleFileRwUtil {
      */
     public static String readStringFromFile(File file, String charsetName) throws Exception {
         // 从文件中读取字节流
-        byte[] resullt = SimpleFileRwUtil.readBytesFromFile(file);
+        byte[] result = FileByteManagerUtils.readBytesFromFile(file);
 
         // 如果未指定编码格式,使用java文件默认的编码格式进行解码
         if (null == charsetName) {
-            return new String(resullt);
+            return new String(result);
         }
         // 如果指定了编码格式,使用指定的编码格式进行解码
         else {
-            return new String(resullt, charsetName);
+            return new String(result, charsetName);
         }
     }
 
@@ -108,16 +106,16 @@ public class SimpleFileRwUtil {
             // 一次读取的字节最大长度
             byte[] buffer = new byte[buffer_size];
 
-            int count = 0;
+            int count ;
             while ((count = in.read(buffer)) != -1) {
                 // 拷贝buffer中的前count个元素到result中
-                result = SimpleFileRwUtil.appendByteArray(result, buffer, count);
+                result = FileByteManagerUtils.appendByteArray(result, buffer, count);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            SimpleFileRwUtil.close(in);
+            FileByteManagerUtils.close(in);
         }
 
         // 返回读取的字节流
@@ -170,7 +168,7 @@ public class SimpleFileRwUtil {
      */
     public static void writeStringToFile(String filePath, String content, String charsetName, boolean append) {
         File file = new File(filePath);
-        SimpleFileRwUtil.writeStringToFile(file, content, charsetName, append);
+        FileByteManagerUtils.writeStringToFile(file, content, charsetName, append);
     }
 
     /**
@@ -199,7 +197,7 @@ public class SimpleFileRwUtil {
             }
 
             // 写入文件流到文件
-            SimpleFileRwUtil.writeBytesToFile(file, bytes, append);
+            FileByteManagerUtils.writeBytesToFile(file, bytes, append);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -234,7 +232,7 @@ public class SimpleFileRwUtil {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            SimpleFileRwUtil.close(out);
+            FileByteManagerUtils.close(out);
         }
     }
 
@@ -245,8 +243,8 @@ public class SimpleFileRwUtil {
      * @param out
      */
     public static void close(InputStream in, OutputStream out) {
-        SimpleFileRwUtil.close(in);
-        SimpleFileRwUtil.close(out);
+        FileByteManagerUtils.close(in);
+        FileByteManagerUtils.close(out);
     }
 
     /**

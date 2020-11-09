@@ -11,9 +11,9 @@ import com.arialyy.annotations.DownloadGroup;
 import com.arialyy.aria.core.Aria;
 import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.task.DownloadGroupTask;
-import com.example.mylibrary.FileUtils;
-import com.example.mylibrary.PermissionsUtils;
-import com.example.mylibrary.SDUtils;
+import com.example.mylibrary.FileManagerUtils;
+import com.example.mylibrary.PermissionsManagerUtils;
+import com.example.mylibrary.SDCardManagerUtils;
 import com.example.mylibrary.Url;
 
 import java.util.ArrayList;
@@ -40,15 +40,15 @@ public class MainActivity2 extends AppCompatActivity {
 
     public void multiDownloadStart(View view){
         Toast.makeText(this, "多任务下载", Toast.LENGTH_LONG).show();
-        PermissionsUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsUtils.IPermissionsResult() {
+        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
                 List<String> subUrls = new ArrayList<>(); // 创建一个http url集合
                 subUrls.add(Url.URL1);  // 添加一个视频地址
                 subUrls.add(Url.URL2);     // 添加一个字幕地址
                 subUrls.add(Url.URL3);            // 添加一个视频截图
-                String folderName = SDUtils.getSDCardCacheDir(MainActivity2.this) + "/demos/file/multi";
-                FileUtils.createDir(folderName);
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity2.this) + "/demos/file/multi";
+                FileManagerUtils.createDir(folderName);
                 long taskId = Aria.download(this)
                         .loadGroup(subUrls) // 设置url集合
                         .setDirPath(folderName)   // 设置该组合任务的文件夹路径
@@ -70,7 +70,7 @@ public class MainActivity2 extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionsUtils.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+        PermissionsManagerUtils.getInstance().onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
     /*

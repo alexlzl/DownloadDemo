@@ -31,7 +31,7 @@ import java.io.IOException;
  * 向ＳＤ卡私有Cache目录写入数据
  * 从ＳＤ卡中读取数据
  */
-public class SDUtils {
+public class SDCardManagerUtils {
 
     /**
      * 判断ＳＤ卡是否挂载
