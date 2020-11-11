@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+
     android:background="@drawable/download_round_bg">
     <TextView
+        android:layout_marginTop="20dp"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/color_262C32"
         android:textSize="15sp"
@@ -11,15 +13,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
  <LinearLayout
+     android:layout_marginTop="10dp"
+     android:gravity="center_vertical"
      android:orientation="horizontal"
      android:layout_width="match_parent"
      android:layout_height="wrap_content">
      <pl.droidsonroids.gif.GifImageView
+         android:layout_marginLeft="25dp"
          android:layout_width="15dp"
          android:layout_height="15dp"
          android:src="@drawable/download_loading"
          />
      <TextView
+         android:layout_marginLeft="5dp"
          android:textColor="@color/color_5A6066"
          android:textSize="15sp"
          android:text="文案已复制成功"
@@ -27,15 +33,19 @@
          android:layout_height="wrap_content"/>
  </LinearLayout>
     <LinearLayout
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
             android:text="视频正在下载"
@@ -43,15 +53,19 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <LinearLayout
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
             android:text="小程序码图片正在下载"
@@ -59,19 +73,32 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <LinearLayout
+        android:layout_marginTop="10dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
             android:text="素材图片正在下载（3/6）"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
     </LinearLayout>
+    <Button
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
+        android:background="@drawable/download_round_gray_bg"
+        android:text="@string/download_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </LinearLayout>

@@ -42,6 +42,8 @@ public class DownloadDialog extends DialogFragment {
          */
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+//        params.height = DensityUtil.dip2px(getContext(),240);
         getDialog().getWindow().setAttributes(params);
         getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
         super.onStart();
