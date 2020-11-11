@@ -1,5 +1,6 @@
 package com.gome.download;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,7 +42,8 @@ public class DownloadDialog extends DialogFragment {
          */
         WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        getDialog().getWindow().setAttributes((WindowManager.LayoutParams) params);
+        getDialog().getWindow().setAttributes(params);
+        getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
         super.onStart();
     }
 }

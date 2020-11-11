@@ -25,6 +25,7 @@ import java.io.File;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -127,7 +128,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "multiple", Toast.LENGTH_LONG).show();
 //        startActivity(new Intent(this,MainActivity2.class));
         DownloadDialog d = new DownloadDialog();
-        d.show(getSupportFragmentManager(),"myDialog");
+        d.setStyle(DialogFragment.STYLE_NORMAL,R.style.dialogFullScreen);//添加上面创建的style
+        d.show(getSupportFragmentManager(),"aa");
+//        d.show(getSupportFragmentManager(),"myDialog");
     }
 
     /**
