@@ -1,11 +1,12 @@
 package com.gome.download;
 
+import android.app.Dialog;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,12 +41,20 @@ public class DownloadDialog extends DialogFragment {
         /*
             因为View在添加后,对话框最外层的ViewGroup并不知道我们导入的View所需要的的宽度。 所以我们需要在onStart生命周期里修改对话框尺寸参数
          */
-        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
-        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-//        params.height = DensityUtil.dip2px(getContext(),240);
-        getDialog().getWindow().setAttributes(params);
-        getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+//        WindowManager.LayoutParams params = getDialog().getWindow().getAttributes();
+////        params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+////        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+////        params.horizontalMargin=DensityUtil.dip2px(getContext(),50);
+//////        params.height = DensityUtil.dip2px(getContext(),240);
+////        getDialog().getWindow().setAttributes(params);
+////        getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+        Dialog dialog = getDialog();
+        if (dialog != null) {
+            DisplayMetrics dm = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
+            dialog.getWindow().setLayout((int) (dm.widthPixels * 0.75), ViewGroup.LayoutParams.WRAP_CONTENT);
+            getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+        }
         super.onStart();
     }
 }
