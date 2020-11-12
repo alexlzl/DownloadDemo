@@ -72,23 +72,26 @@ public class MainActivity extends AppCompatActivity {
 
     public void singleDownloadVideo(View view) {
         Toast.makeText(this, "下载视频", Toast.LENGTH_LONG).show();
-        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
-            @Override
-            public void passPermissions() {
-                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video/test.mp4";
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video";
-                FileManagerUtils.createDir(folderName);
-                videoTaskId = Aria.download(this)
-                        .load(Url.URL2)     //读取下载地址
-                        .setFilePath(fileName) //设置文件保存的完整路径
-                        .create();   //创建并启动下载
-            }
-
-            @Override
-            public void forbidPermissions() {
-
-            }
-        });
+//        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
+//            @Override
+//            public void passPermissions() {
+//                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video/test.mp4";
+//                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/video";
+//                FileManagerUtils.createDir(folderName);
+//                videoTaskId = Aria.download(this)
+//                        .load(Url.URL2)     //读取下载地址
+//                        .setFilePath(fileName) //设置文件保存的完整路径
+//                        .create();   //创建并启动下载
+//            }
+//
+//            @Override
+//            public void forbidPermissions() {
+//
+//            }
+//        });
+        ShowDialog showDialog=new ShowDialog(this);
+        showDialog.showDialog(getSupportFragmentManager());
+        showDialog.loadVideo(null);
     }
 
     private long picTaskId;
