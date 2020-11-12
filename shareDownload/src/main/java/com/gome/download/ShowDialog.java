@@ -1,5 +1,6 @@
 package com.gome.download;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 
 import androidx.fragment.app.FragmentManager;
@@ -9,12 +10,16 @@ import androidx.fragment.app.FragmentManager;
  * @ describe
  * @ time 2020/11/12 10:46
  */
-class ShowDialog {
-    private DownloadDialog downloadDialog;
+public class ShowDialog {
+    private DownloadDialog mDownloadDialog;
+    private Activity mActivity;
+   public ShowDialog(Activity activity){
+       mActivity=activity;
+   }
 
     public void showDialog(FragmentManager fragmentManager) {
-        downloadDialog = new DownloadDialog();
-        downloadDialog.show(fragmentManager, "aa");
+        mDownloadDialog = new DownloadDialog();
+        mDownloadDialog.show(fragmentManager, "aa");
     }
 
     /**
@@ -36,7 +41,7 @@ class ShowDialog {
      * @ return
      */
     public void loadVideo(ShareReponseBean.VideoDownLoadBean videoDownLoadBean) {
-
+        mDownloadDialog.loadVideo(videoDownLoadBean,mActivity);
     }
 
     /**
@@ -58,6 +63,6 @@ class ShowDialog {
      * @ return
      */
     public void laodMaterialPic(ShareReponseBean.ImageDownloadBean imageDownloadBean) {
-
+        mDownloadDialog.loadMaterialPic(imageDownloadBean,mActivity);
     }
 }
