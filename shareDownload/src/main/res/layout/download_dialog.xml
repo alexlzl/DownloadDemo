@@ -2,7 +2,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginLeft="50dp"
     android:background="@drawable/download_round_bg">
     <TextView
         android:layout_marginTop="20dp"
@@ -19,6 +18,7 @@
      android:layout_width="match_parent"
      android:layout_height="wrap_content">
      <pl.droidsonroids.gif.GifImageView
+         android:id="@+id/download_copy_process"
          android:layout_marginLeft="25dp"
          android:layout_width="15dp"
          android:layout_height="15dp"
@@ -39,6 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/download_video_process"
             android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -59,6 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/download_mini_program_process"
             android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -79,6 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/download_material_pic_process"
             android:layout_marginLeft="25dp"
             android:layout_width="15dp"
             android:layout_height="15dp"
@@ -93,6 +96,10 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <Button
+        android:paddingTop="11dp"
+        android:paddingBottom="11dp"
+        android:textSize="16sp"
+        android:textColor="@color/color_FFFFFF"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
         android:layout_marginRight="25dp"
