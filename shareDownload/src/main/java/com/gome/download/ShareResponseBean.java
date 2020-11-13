@@ -7,7 +7,7 @@ import java.util.List;
  * @ describe
  * @ time 2020/11/12 10:44
  */
-class ShareResponseBean {
+public class ShareResponseBean {
     /**
      * imageDownload : {"imageList":[{"imageUrl":"http://xxxxxxxx","imageSuffix":".jpg"}],"displayeStr":"下载显示的成功失败文案"}
      * copyString : {"displayeStr":"下载显示的成功失败文案","copyStr":"我是要复制的文案"}

@@ -14,8 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arialyy.annotations.Download;
+import com.arialyy.annotations.DownloadGroup;
 import com.arialyy.aria.core.Aria;
+import com.arialyy.aria.core.download.DownloadEntity;
+import com.arialyy.aria.core.task.DownloadGroupTask;
 import com.arialyy.aria.core.task.DownloadTask;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -166,7 +172,7 @@ public class DownloadDialog extends DialogFragment {
     *
     * @ return
     */
-    public void loadVideo(ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
+    public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
@@ -174,7 +180,7 @@ public class DownloadDialog extends DialogFragment {
                 String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/video";
                 FileManagerUtils.createDir(folderName);
                 mVideoTaskId = Aria.download(activity)
-                        .load(Url.URL2)     //读取下载地址
+                        .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
                         .setFilePath(fileName) //设置文件保存的完整路径
                         .create();   //创建并启动下载
             }
@@ -185,7 +191,7 @@ public class DownloadDialog extends DialogFragment {
             }
         });
     }
-
+    private  List<String> mPicUrlList;
     private long mPicTaskId;
     /**
      * @ describe 图片素材下载
@@ -198,17 +204,25 @@ public class DownloadDialog extends DialogFragment {
      *
      * @ return
      */
-    public void loadMaterialPic(ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
+    public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
+
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                String fileName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/pic/gome.jpg";
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/pic";
+                mPicUrlList = new ArrayList<>(); // 创建一个http url集合
+                for(int i=0;i<imageDownloadBean.getImageList().size();i++){
+
+                    mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
+
+                }
+
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/multi";
                 FileManagerUtils.createDir(folderName);
-                mPicTaskId = Aria.download(activity)
-                        .load(Url.URL3)     //读取下载地址
-                        .setFilePath(fileName) //设置文件保存的完整路径
-                        .create();   //创建并启动下载
+                long taskId = Aria.download(activity)
+                        .loadGroup(mPicUrlList) // 设置url集合
+                        .setDirPath(folderName)   // 设置该组合任务的文件夹路径
+                        .unknownSize().ignoreFilePathOccupy()            // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
+                        .create();
             }
 
             @Override
@@ -351,17 +365,62 @@ public class DownloadDialog extends DialogFragment {
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
             mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
         }
-        if (Url.URL3.equals(task.getKey())) {
-            //小程序码下载
-            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载图片成功======");
-            mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
-        }
 
-        if (Url.URL1.equals(task.getKey())) {
+
+        if (mPicUrlList.contains(task.getKey())) {
             //素材图片下载
+            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载图片成功======");
         }
     }
+    /*
+     * 任务执行中
+     */
+    @DownloadGroup.onTaskRunning()
+    protected void running(DownloadGroupTask task) {
+//        task1.setText("group running, p = "
+//                + task.getPercent()
+//                + ", speed = "
+//                + task.getConvertSpeed()
+//                + "current_p = "
+//                + task.getCurrentProgress());
+        Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载======" + task.getKey());
+    }
 
+    /*
+     * 任务完成
+     */
+    @DownloadGroup.onTaskComplete()
+    protected void taskComplete(DownloadGroupTask task) {
+        Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载完成======" + task.getKey());
+    }
+    @DownloadGroup.onSubTaskRunning
+    void onSubTaskRunning(DownloadGroupTask groupTask, DownloadEntity subEntity) {
+
+    }
+  /**
+   * @ describe 图片数组子任务下载完成回调
+   *
+   * @author lzl
+   *
+   * @ time 2020/11/13 15:19
+   *
+   * @ param
+   *
+   * @ return
+   */
+  private int mLoadOverPiceNum;
+    @DownloadGroup.onSubTaskComplete
+    void onSubTaskComplete(DownloadGroupTask groupTask, DownloadEntity subEntity) {
+        // 子任务完成的回调
+
+        if(mPicUrlList.contains(subEntity.getKey())){
+            mLoadOverPiceNum++;
+            Log.e(TAG,  "子图片组下载完成======"+ mLoadOverPiceNum+"==" + subEntity.getKey());
+
+        }
+
+
+    }
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);

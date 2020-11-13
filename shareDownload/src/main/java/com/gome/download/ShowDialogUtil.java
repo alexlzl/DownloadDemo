@@ -10,17 +10,18 @@ import androidx.fragment.app.FragmentManager;
  * @ describe
  * @ time 2020/11/12 10:46
  */
-public class ShowDialog {
+public class ShowDialogUtil {
     private DownloadDialog mDownloadDialog;
     private Activity mActivity;
 
-    public ShowDialog(Activity activity) {
+    public ShowDialogUtil(Activity activity) {
         mActivity = activity;
     }
 
     public void showDialog(FragmentManager fragmentManager) {
         mDownloadDialog = new DownloadDialog();
-        mDownloadDialog.show(fragmentManager, "aa");
+//        mDownloadDialog.show(fragmentManager, "aa");
+        mDownloadDialog.showNow(fragmentManager, "aa");
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.gome.downloaddemo;
 
-import android.Manifest;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,14 +11,16 @@ import android.widget.Toast;
 
 import com.arialyy.aria.core.Aria;
 import com.gome.download.FileByteManagerUtils;
-import com.gome.download.FileManagerUtils;
 import com.gome.download.PermissionsManagerUtils;
 import com.gome.download.SDCardManagerUtils;
-import com.gome.download.ShowDialog;
+import com.gome.download.ShareResponseBean;
+import com.gome.download.ShowDialogUtil;
 import com.gome.download.Url;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -46,25 +48,27 @@ public class MainActivity extends AppCompatActivity {
 
     public void singleDownload(View view) {
         stopSingleDownloadBtn.setTag("start");
-        Toast.makeText(this, "下载apk", Toast.LENGTH_LONG).show();
-        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
-            @Override
-            public void passPermissions() {
-                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk/test.apk";
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk";
-                FileManagerUtils.createDir(folderName);
-                apkTaskId = Aria.download(this)
-                        .load(Url.URL1)     //读取下载地址
-                        .setFilePath(fileName) //设置文件保存的完整路径
-                        .create();   //创建并启动下载
-            }
-
-            @Override
-            public void forbidPermissions() {
-
-            }
-        });
-
+//        Toast.makeText(this, "下载apk", Toast.LENGTH_LONG).show();
+//        PermissionsManagerUtils.getInstance().checkPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
+//            @Override
+//            public void passPermissions() {
+//                String fileName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk/test.apk";
+//                String folderName = SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/apk";
+//                FileManagerUtils.createDir(folderName);
+//                apkTaskId = Aria.download(this)
+//                        .load(Url.URL1)     //读取下载地址
+//                        .setFilePath(fileName) //设置文件保存的完整路径
+//                        .create();   //创建并启动下载
+//            }
+//
+//            @Override
+//            public void forbidPermissions() {
+//
+//            }
+//        });
+        ShowDialogUtil showDialog=new ShowDialogUtil(this);
+        showDialog.showDialog(getSupportFragmentManager());
+        showDialog.startLoadResource(getShareResponseBean());
 
     }
 
@@ -89,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
-        ShowDialog showDialog=new ShowDialog(this);
+        ShowDialogUtil showDialog=new ShowDialogUtil(this);
         showDialog.showDialog(getSupportFragmentManager());
         showDialog.loadVideo(null);
     }
@@ -115,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 ////
 ////            }
 ////        });
-        ShowDialog showDialog=new ShowDialog(this);
+        ShowDialogUtil showDialog=new ShowDialogUtil(this);
         showDialog.showDialog(getSupportFragmentManager());
         showDialog.loadMaterialPic(null);
     }
@@ -130,9 +134,35 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "multiple", Toast.LENGTH_LONG).show();
 //        DownloadDialog d = new DownloadDialog();
 //        d.show(getSupportFragmentManager(),"aa");
-        ShowDialog showDialog=new ShowDialog(this);
-        showDialog.showDialog(getSupportFragmentManager());
-        showDialog.startLoadResource(null);
+      startActivity(new Intent(this,MainActivity2.class));
+    }
+
+    public ShareResponseBean getShareResponseBean(){
+        ShareResponseBean shareResponseBean=new ShareResponseBean();
+        //构建素材图片对象
+        ShareResponseBean.ImageDownloadBean imageDownloadBean=new ShareResponseBean.ImageDownloadBean();
+        imageDownloadBean.setDisplayeStr("素材图片");
+        List<ShareResponseBean.ImageDownloadBean.ImageListBean> listBeanList=new ArrayList<>();
+        for(int i=0;i< Url.PICS.length;i++){
+            ShareResponseBean.ImageDownloadBean.ImageListBean imageListBean=new ShareResponseBean.ImageDownloadBean.ImageListBean();
+            imageListBean.setImageUrl(Url.PICS[i]);
+            imageListBean.setImageSuffix("jpg");
+            listBeanList.add(imageListBean);
+        }
+        imageDownloadBean.setImageList(listBeanList);
+        shareResponseBean.setImageDownload(imageDownloadBean);
+        //构建视频资源
+        ShareResponseBean.VideoDownLoadBean videoDownLoadBean=new ShareResponseBean.VideoDownLoadBean();
+        videoDownLoadBean.setDisplayeStr("视频");
+        videoDownLoadBean.setVideoSuffix(".mp4");
+        videoDownLoadBean.setVideoUrl(Url.URL2);
+        shareResponseBean.setVideoDownLoad(videoDownLoadBean);
+        //复制文案
+        ShareResponseBean.CopyStringBean copyStringBean=new ShareResponseBean.CopyStringBean();
+        copyStringBean.setCopyStr("我是要复制的文案");
+        copyStringBean.setDisplayeStr("文案已复制成功");
+        shareResponseBean.setCopyString(copyStringBean);
+        return shareResponseBean;
     }
 
     /**
