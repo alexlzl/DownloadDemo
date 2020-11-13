@@ -7,17 +7,20 @@ import java.util.List;
  * @ describe
  * @ time 2020/11/12 10:44
  */
-class ShareReponseBean {
+class ShareResponseBean {
     /**
      * imageDownload : {"imageList":[{"imageUrl":"http://xxxxxxxx","imageSuffix":".jpg"}],"displayeStr":"下载显示的成功失败文案"}
      * copyString : {"displayeStr":"下载显示的成功失败文案","copyStr":"我是要复制的文案"}
      * videoDownLoad : {"displayeStr":"下载显示的成功失败文案","videoUrl":"http://xxxxxxxx","videoSuffix":".map4"}
      * miniProgramDownLaod : {"displayeStr":"下载显示的成功失败文案","universalParam":{"channelSelect":{"channelList":["weibo","wcfriend","wcmoments","wcmini","qq","qzone","gfriend","gcircle","gmoments","copylink","wcposters","commonposters","saveimage"],"scenceCode":"01-02-03","extendParam":{"key":"value"}},"targetMessage":{"type":"image-link","title":"分享标题","content":"分享内容","wapShareUrl":"分享链接","iconImage":"分享logo","bigImage":["img1","img2","img3"]},"source":{"type":"link-image-product-shop-circle-topic","souce":"1","mainID":"业务id","stid":"门店id","sourceInfo":{"productId":"productid","skuId":"商品id","itemType":"","groupId":"组团id"},"wapShareUrl":"","miniShareUrl":"","extendParam":{}},"extendParam":{"pastePromotion":"XXXXX","shareStatistic":{"type":"业务类型，01商品、02链接、03 店铺、04茅台....","mainID":"业务主键，商品为skuid；链接为cmsKey值或活动id；茅台是任务ID...","stid":"门店id","url":"分享的url，客户端拼接过cmpid和uid","sourceInfo":{"productId":"商品id","skuId":"商品id","itemType":"商品类型","groupId":"组团id","activeId":"茅台活动id","cmsKey":"茅台的场景说需要cmskey"}},"unShowSuccessPage":"Y 【禁止分享成功页展示】"}},"templateParam":[{"targetChannelList":["wcmini","wcmoments","wcposters","commonposters"],"childChannelMap":{"wcposters":["weibo","wcfriend","wcmoments","wcmini"]},"templateCode":"product01-activity02","supportSelfRequest":"Y","requestParam":"如果是自请求，就会从universalParam-source拿信息，这里不用重复写","renderParam":{"promDesc":"","name":"","content":"","imgUrls":["url1","url2"],"storeName":"","miniShareUrl":"","wapShareUrl":"","qrCodeImage":"","headLogoImg":"","footLogoImg":"","disclaimer":"","userImg":"","productInfo":{"itemLabel":"1：自营；2：联营；3：国美超市","itemType":"0：普通 1：团购 2：抢购 3：预约 4：预售 5：拼团","salePrice":"售价","markingPrice":"划线价","priceDesc":"","activityEndTime":" ","groupUserNum":"3人成团"},"cardImgUrl":"服务端渲染的图片地址","smallCardImgUrl":"服务端渲染小程序card图片","extendParam":{}}}]}
      */
-
+    //下载图片素材
     private ImageDownloadBean imageDownload;
+    //复制文本内容
     private CopyStringBean copyString;
+    //下载视频内容
     private VideoDownLoadBean videoDownLoad;
+    //小程序码下载内容
     private MiniProgramDownLaodBean miniProgramDownLaod;
 
     public ImageDownloadBean getImageDownload() {

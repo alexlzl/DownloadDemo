@@ -13,13 +13,27 @@ import androidx.fragment.app.FragmentManager;
 public class ShowDialog {
     private DownloadDialog mDownloadDialog;
     private Activity mActivity;
-   public ShowDialog(Activity activity){
-       mActivity=activity;
-   }
+
+    public ShowDialog(Activity activity) {
+        mActivity = activity;
+    }
 
     public void showDialog(FragmentManager fragmentManager) {
         mDownloadDialog = new DownloadDialog();
         mDownloadDialog.show(fragmentManager, "aa");
+    }
+
+    /**
+     * @ describe 资源下载入口方法
+     * @author lzl
+     * @ time 2020/11/13 11:34
+     * @ param
+     * @ return
+     */
+    public void startLoadResource(ShareResponseBean shareResponseBean) {
+         loadCopyText(shareResponseBean.getCopyString());
+         loadVideo(shareResponseBean.getVideoDownLoad());
+         loadMaterialPic(shareResponseBean.getImageDownload());
     }
 
     /**
@@ -29,8 +43,9 @@ public class ShowDialog {
      * @ param
      * @ return
      */
-    public void loadCopyText(ShareReponseBean.CopyStringBean copyStringBean) {
-
+    public void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
+        ClipboardUtil.copyText(mActivity,copyStringBean.getCopyStr());
+        mDownloadDialog.setCopyTextSuccess();
     }
 
     /**
@@ -40,8 +55,9 @@ public class ShowDialog {
      * @ param
      * @ return
      */
-    public void loadVideo(ShareReponseBean.VideoDownLoadBean videoDownLoadBean) {
-        mDownloadDialog.loadVideo(videoDownLoadBean,mActivity);
+    public void loadVideo(ShareResponseBean.VideoDownLoadBean videoDownLoadBean) {
+        mDownloadDialog.loadVideo(videoDownLoadBean, mActivity);
+
     }
 
     /**
@@ -62,7 +78,7 @@ public class ShowDialog {
      * @ param
      * @ return
      */
-    public void laodMaterialPic(ShareReponseBean.ImageDownloadBean imageDownloadBean) {
-        mDownloadDialog.loadMaterialPic(imageDownloadBean,mActivity);
+    public void loadMaterialPic(ShareResponseBean.ImageDownloadBean imageDownloadBean) {
+        mDownloadDialog.loadMaterialPic(imageDownloadBean, mActivity);
     }
 }

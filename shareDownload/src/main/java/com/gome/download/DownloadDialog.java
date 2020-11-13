@@ -21,12 +21,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import pl.droidsonroids.gif.GifImageView;
+
 /**
  * @author lzl
  * @ describe
  * @ time 2020/11/11 16:03
  */
-public class DownloadDialog extends DialogFragment  {
+public class DownloadDialog extends DialogFragment {
     private GifImageView mCopyProcessIv, mVideoLoadProcessIv, mMiniProgramLoadProcessIv, mMaterialPicLoadProcessIv;
     private static final String TAG = "TAG";
     private Activity mactivity;
@@ -58,7 +59,7 @@ public class DownloadDialog extends DialogFragment  {
         mVideoLoadProcessIv = view.findViewById(R.id.download_video_process);
         mMiniProgramLoadProcessIv = view.findViewById(R.id.download_mini_program_process);
         mMaterialPicLoadProcessIv = view.findViewById(R.id.download_material_pic_process);
-        mCopyProcessIv.setImageResource(R.drawable.download_success);
+
 
     }
 
@@ -87,7 +88,7 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setCopyTextSuccess() {
-
+        mCopyProcessIv.setImageResource(R.drawable.download_success);
     }
 
     /**
@@ -98,7 +99,7 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setCopyTextFail() {
-
+        mCopyProcessIv.setImageResource(R.drawable.download_error);
     }
 
     /**
@@ -109,7 +110,7 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setVideoLoadSuccess() {
-
+        mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
     }
 
     /**
@@ -120,7 +121,7 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setVideoLoadFail() {
-
+        mVideoLoadProcessIv.setImageResource(R.drawable.download_error);
     }
 
     /**
@@ -131,7 +132,7 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setMiniProgramLoadSuccess() {
-
+        mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_success);
     }
 
     /**
@@ -142,19 +143,30 @@ public class DownloadDialog extends DialogFragment  {
      * @ return
      */
     public void setMiniProgramLoadFail() {
-
+        mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_error);
     }
 
     public void setMaterialPicLoadSuccess() {
-
+        mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
     }
 
     public void setMaterialPicLoadFail() {
-
+        mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_error);
     }
 
     private long mVideoTaskId;
-    public void loadVideo(ShareReponseBean.VideoDownLoadBean videoDownLoadBean,final Activity activity) {
+   /**
+    * @ describe 视频下载
+    *
+    * @author lzl
+    *
+    * @ time 2020/11/13 11:48
+    *
+    * @ param
+    *
+    * @ return
+    */
+    public void loadVideo(ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
@@ -175,7 +187,18 @@ public class DownloadDialog extends DialogFragment  {
     }
 
     private long mPicTaskId;
-    public void loadMaterialPic(ShareReponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
+    /**
+     * @ describe 图片素材下载
+     *
+     * @author lzl
+     *
+     * @ time 2020/11/13 11:48
+     *
+     * @ param
+     *
+     * @ return
+     */
+    public void loadMaterialPic(ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
@@ -194,6 +217,7 @@ public class DownloadDialog extends DialogFragment  {
             }
         });
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -321,24 +345,21 @@ public class DownloadDialog extends DialogFragment  {
     protected void taskComplete(DownloadTask task) {
         //在这里处理任务完成的状态
         Log.e(TAG, "Over===========" + task.getPercent() + "测试======" + task.getKey());
-        if (Url.URL1.equals(task.getKey())) {
-            //任务1
-//            tv1.setText(String.format("%s%%", task.getPercent()));
-        }
+
         if (Url.URL2.equals(task.getKey())) {
-            //任务2
-//            tv2.setText(String.format("%s%%", task.getPercent()));
-            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======" );
+            //视频下载
+            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
             mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
         }
         if (Url.URL3.equals(task.getKey())) {
-            //任务3
-//            tv3.setText(String.format("%s%%", task.getPercent()));
-            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载图片成功======" );
+            //小程序码下载
+            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载图片成功======");
             mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
         }
 
-
+        if (Url.URL1.equals(task.getKey())) {
+            //素材图片下载
+        }
     }
 
     @Override

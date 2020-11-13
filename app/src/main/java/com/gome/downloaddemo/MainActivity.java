@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 ////        });
         ShowDialog showDialog=new ShowDialog(this);
         showDialog.showDialog(getSupportFragmentManager());
-        showDialog.laodMaterialPic(null);
+        showDialog.loadMaterialPic(null);
     }
 
     @Override
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
 //        d.show(getSupportFragmentManager(),"aa");
         ShowDialog showDialog=new ShowDialog(this);
         showDialog.showDialog(getSupportFragmentManager());
-        showDialog.loadVideo(null);
+        showDialog.startLoadResource(null);
     }
 
     /**
