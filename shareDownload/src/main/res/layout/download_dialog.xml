@@ -25,6 +25,7 @@
          android:src="@drawable/download_loading"
          />
      <TextView
+         android:id="@+id/download_copy_text_tv"
          android:layout_marginLeft="5dp"
          android:textColor="@color/color_5A6066"
          android:textSize="15sp"
@@ -46,6 +47,7 @@
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:id="@+id/download_load_video_tv"
             android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
@@ -67,6 +69,7 @@
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:id="@+id/download_load_mini_program_tv"
             android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
@@ -88,6 +91,7 @@
             android:src="@drawable/download_loading"
             />
         <TextView
+            android:id="@+id/download_material_pic_tv"
             android:layout_marginLeft="5dp"
             android:textColor="@color/color_5A6066"
             android:textSize="15sp"
@@ -96,6 +100,7 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <Button
+        android:id="@+id/download_cancel_bt"
         android:paddingTop="11dp"
         android:paddingBottom="11dp"
         android:textSize="16sp"

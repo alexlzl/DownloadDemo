@@ -46,7 +46,7 @@ public class ShowDialogUtil {
      */
     public void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
         ClipboardUtil.copyText(mActivity,copyStringBean.getCopyStr());
-        mDownloadDialog.setCopyTextSuccess();
+        mDownloadDialog.setCopyTextSuccess(copyStringBean.getCopyStr());
     }
 
     /**

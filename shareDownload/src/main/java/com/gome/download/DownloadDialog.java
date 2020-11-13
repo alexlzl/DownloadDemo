@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.annotations.DownloadGroup;
@@ -33,10 +35,12 @@ import pl.droidsonroids.gif.GifImageView;
  * @ describe
  * @ time 2020/11/11 16:03
  */
-public class DownloadDialog extends DialogFragment {
+public class DownloadDialog extends DialogFragment implements View.OnClickListener {
     private GifImageView mCopyProcessIv, mVideoLoadProcessIv, mMiniProgramLoadProcessIv, mMaterialPicLoadProcessIv;
     private static final String TAG = "TAG";
     private Activity mactivity;
+    private Button mCancelDownloadBtn;
+    private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -65,8 +69,17 @@ public class DownloadDialog extends DialogFragment {
         mVideoLoadProcessIv = view.findViewById(R.id.download_video_process);
         mMiniProgramLoadProcessIv = view.findViewById(R.id.download_mini_program_process);
         mMaterialPicLoadProcessIv = view.findViewById(R.id.download_material_pic_process);
+        mCancelDownloadBtn = view.findViewById(R.id.download_cancel_bt);
+        mCopyTextTv = view.findViewById(R.id.download_copy_text_tv);
+        mVideoLoadTv = view.findViewById(R.id.download_load_video_tv);
+        mMiniProgramTv = view.findViewById(R.id.download_load_mini_program_tv);
+        mMaterialPicTv = view.findViewById(R.id.download_material_pic_tv);
+        setViewListener();
 
+    }
 
+    private void setViewListener() {
+        mCancelDownloadBtn.setOnClickListener(this);
     }
 
     @Override
@@ -81,8 +94,11 @@ public class DownloadDialog extends DialogFragment {
             getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
             dialog.getWindow().setLayout((int) (dm.widthPixels * 0.75), ViewGroup.LayoutParams.WRAP_CONTENT);
             getDialog().getWindow().getDecorView().setBackgroundColor(Color.TRANSPARENT);
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setCancelable(false);
+            dialog.setOnDismissListener(this);
         }
-        dialog.setOnDismissListener(this);
+
         super.onStart();
     }
 
@@ -93,8 +109,9 @@ public class DownloadDialog extends DialogFragment {
      * @ param
      * @ return
      */
-    public void setCopyTextSuccess() {
+    public void setCopyTextSuccess(String content) {
         mCopyProcessIv.setImageResource(R.drawable.download_success);
+        mCopyTextTv.setText(content);
     }
 
     /**
@@ -117,6 +134,7 @@ public class DownloadDialog extends DialogFragment {
      */
     public void setVideoLoadSuccess() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
+        mVideoLoadTv.setText(String.format("%s下载成功", mVideoDownLoadBean.getDisplayeStr()));
     }
 
     /**
@@ -154,6 +172,7 @@ public class DownloadDialog extends DialogFragment {
 
     public void setMaterialPicLoadSuccess() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
+        mMaterialPicTv.setText(String.format("%s下载完成", mImageDownloadBean.getDisplayeStr()));
     }
 
     public void setMaterialPicLoadFail() {
@@ -161,18 +180,20 @@ public class DownloadDialog extends DialogFragment {
     }
 
     private long mVideoTaskId;
-   /**
-    * @ describe 视频下载
-    *
-    * @author lzl
-    *
-    * @ time 2020/11/13 11:48
-    *
-    * @ param
-    *
-    * @ return
-    */
+    private ShareResponseBean.VideoDownLoadBean mVideoDownLoadBean;
+    private String mVideoLoadUrl;
+
+    /**
+     * @ describe 视频下载
+     * @author lzl
+     * @ time 2020/11/13 11:48
+     * @ param
+     * @ return
+     */
     public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
+        mVideoDownLoadBean = videoDownLoadBean;
+        mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
+        mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
@@ -191,17 +212,16 @@ public class DownloadDialog extends DialogFragment {
             }
         });
     }
-    private  List<String> mPicUrlList;
+
+    private List<String> mPicUrlList;
     private long mPicTaskId;
+    private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
+
     /**
      * @ describe 图片素材下载
-     *
      * @author lzl
-     *
      * @ time 2020/11/13 11:48
-     *
      * @ param
-     *
      * @ return
      */
     public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
@@ -209,8 +229,10 @@ public class DownloadDialog extends DialogFragment {
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
+                mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
+                mImageDownloadBean = imageDownloadBean;
                 mPicUrlList = new ArrayList<>(); // 创建一个http url集合
-                for(int i=0;i<imageDownloadBean.getImageList().size();i++){
+                for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
 
                     mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
 
@@ -218,7 +240,7 @@ public class DownloadDialog extends DialogFragment {
 
                 String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/multi";
                 FileManagerUtils.createDir(folderName);
-                long taskId = Aria.download(activity)
+                mPicTaskId = Aria.download(activity)
                         .loadGroup(mPicUrlList) // 设置url集合
                         .setDirPath(folderName)   // 设置该组合任务的文件夹路径
                         .unknownSize().ignoreFilePathOccupy()            // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
@@ -280,22 +302,7 @@ public class DownloadDialog extends DialogFragment {
     @Download.onTaskRunning
     protected void running(DownloadTask task) {
         Log.e(TAG, "Percent===========" + task.getPercent() + "======" + task.getKey());
-        if (Url.URL1.equals(task.getKey())) {
-            //任务1
-//            tv1.setText(String.format("%s%%", task.getPercent()));
-        }
-        if (Url.URL2.equals(task.getKey())) {
-            //任务2
-//            tv2.setText(String.format("%s%%", task.getPercent()));
-        }
-        if (Url.URL3.equals(task.getKey())) {
-            //任务3
-//            tv3.setText(String.format("%s%%", task.getPercent()));
-        }
 
-        int p = task.getPercent();    //任务进度百分比
-        String speed = task.getConvertSpeed();    //转换单位后的下载速度，单位转换需要在配置文件中打开
-        long speed1 = task.getSpeed(); //原始byte长度速度
     }
 
     /**
@@ -320,7 +327,8 @@ public class DownloadDialog extends DialogFragment {
     @Download.onTaskStop
     protected void downloadStop(DownloadTask task) {
         Log.e(TAG, "Stop===========" + task.getKey());
-        if (Url.URL1.equals(task.getKey())) {
+        if (mVideoLoadUrl.equals(task.getKey())) {
+
         }
     }
 
@@ -359,71 +367,101 @@ public class DownloadDialog extends DialogFragment {
     protected void taskComplete(DownloadTask task) {
         //在这里处理任务完成的状态
         Log.e(TAG, "Over===========" + task.getPercent() + "测试======" + task.getKey());
-
-        if (Url.URL2.equals(task.getKey())) {
-            //视频下载
+        if (mVideoLoadUrl.equals(task.getKey())) {
+            //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
-            mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
+            setVideoLoadSuccess();
         }
 
-
-        if (mPicUrlList.contains(task.getKey())) {
-            //素材图片下载
-            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载图片成功======");
-        }
     }
-    /*
-     * 任务执行中
+
+    /**
+     * @ describe 任务组进行中回调
+     * @author lzl
+     * @ time 2020/11/13 17:17
+     * @ param
+     * @ return
      */
     @DownloadGroup.onTaskRunning()
     protected void running(DownloadGroupTask task) {
-//        task1.setText("group running, p = "
-//                + task.getPercent()
-//                + ", speed = "
-//                + task.getConvertSpeed()
-//                + "current_p = "
-//                + task.getCurrentProgress());
+
         Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载======" + task.getKey());
     }
 
-    /*
-     * 任务完成
+    /**
+     * @ describe 任务组完成回调
+     * @author lzl
+     * @ time 2020/11/13 17:17
+     * @ param
+     * @ return
      */
     @DownloadGroup.onTaskComplete()
     protected void taskComplete(DownloadGroupTask task) {
         Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载完成======" + task.getKey());
     }
+
+    /**
+     * @ describe 任务组中单个任务进行中回调
+     * @author lzl
+     * @ time 2020/11/13 17:16
+     * @ param
+     * @ return
+     */
     @DownloadGroup.onSubTaskRunning
     void onSubTaskRunning(DownloadGroupTask groupTask, DownloadEntity subEntity) {
 
     }
-  /**
-   * @ describe 图片数组子任务下载完成回调
-   *
-   * @author lzl
-   *
-   * @ time 2020/11/13 15:19
-   *
-   * @ param
-   *
-   * @ return
-   */
-  private int mLoadOverPiceNum;
+
+    /**
+     * @ describe 图片数组子任务下载完成回调
+     * @author lzl
+     * @ time 2020/11/13 15:19
+     * @ param
+     * @ return
+     */
+    private int mLoadOverPicNum;
+
     @DownloadGroup.onSubTaskComplete
     void onSubTaskComplete(DownloadGroupTask groupTask, DownloadEntity subEntity) {
         // 子任务完成的回调
 
-        if(mPicUrlList.contains(subEntity.getKey())){
-            mLoadOverPiceNum++;
-            Log.e(TAG,  "子图片组下载完成======"+ mLoadOverPiceNum+"==" + subEntity.getKey());
+        if (mPicUrlList.contains(subEntity.getKey())) {
+            mLoadOverPicNum++;
+            Log.e(TAG, "子图片组下载完成======" + mLoadOverPicNum + "==" + subEntity.getKey());
 
+        }
+
+        if (mPicUrlList.size() == mLoadOverPicNum) {
+            setMaterialPicLoadSuccess();
+            mLoadOverPicNum = 0;
+        } else {
+            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mLoadOverPicNum,mPicUrlList.size()));
         }
 
 
     }
+
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
         Aria.download(this).unRegister();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (R.id.download_cancel_bt == v.getId()) {
+            //取消资源下载事件
+            if (getDialog() != null) {
+                getDialog().dismiss();
+                Aria.download(this)
+                        .load(mPicTaskId)
+                        .cancel();
+                Aria.download(this)
+                        .load(mVideoTaskId)
+                        .cancel();
+            }
+
+        }
+
     }
 }
