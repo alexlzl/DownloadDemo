@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arialyy.annotations.Download;
 import com.arialyy.annotations.DownloadGroup;
@@ -39,8 +40,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private GifImageView mCopyProcessIv, mVideoLoadProcessIv, mMiniProgramLoadProcessIv, mMaterialPicLoadProcessIv;
     private static final String TAG = "TAG";
     private Activity mactivity;
-    private Button mCancelDownloadBtn;
-    private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv;
+    private Button mCancelDownloadBtn,mShareBtn;
+    private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv,mCancelShareTv;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -74,12 +75,16 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mVideoLoadTv = view.findViewById(R.id.download_load_video_tv);
         mMiniProgramTv = view.findViewById(R.id.download_load_mini_program_tv);
         mMaterialPicTv = view.findViewById(R.id.download_material_pic_tv);
+        mShareBtn=view.findViewById(R.id.download_share_button);
+        mCancelShareTv=view.findViewById(R.id.download_share_cancel_tv);
         setViewListener();
 
     }
 
     private void setViewListener() {
         mCancelDownloadBtn.setOnClickListener(this);
+        mShareBtn.setOnClickListener(this);
+        mCancelShareTv.setOnClickListener(this);
     }
 
     @Override
@@ -442,6 +447,22 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
 
     }
+    /**
+     * @ describe 显示分享视图
+     *
+     * @author lzl
+     *
+     * @ time 2020/11/13 18:14
+     *
+     * @ param
+     *
+     * @ return
+     */
+    private void showShareView(){
+        mShareBtn.setVisibility(View.VISIBLE);
+        mCancelShareTv.setVisibility(View.VISIBLE);
+        mCancelDownloadBtn.setVisibility(View.GONE);
+    }
 
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
@@ -464,6 +485,19 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             }
 
         }
+        if(R.id.download_share_button==v.getId()){
+            //进行分享事件
+            Toast.makeText(mactivity,"cancel",Toast.LENGTH_LONG).show();
+            /**
+             * TODO 分享方法调用
+             */
+        }
+        if(R.id.download_share_cancel_tv==v.getId()){
+            //取消分享事件
+            if (getDialog() != null){
+                getDialog().dismiss();
+            }
 
+        }
     }
 }

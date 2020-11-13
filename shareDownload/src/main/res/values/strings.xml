@@ -3,4 +3,5 @@
     <string name="download_title">下载素材</string>
     <string name="download_loading">正在下载</string>
     <string name="download_cancel">取消</string>
+    <string name="download_share">去微信分享</string>
 </resources>
