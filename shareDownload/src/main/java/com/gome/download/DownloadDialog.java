@@ -40,8 +40,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private GifImageView mCopyProcessIv, mVideoLoadProcessIv, mMiniProgramLoadProcessIv, mMaterialPicLoadProcessIv;
     private static final String TAG = "TAG";
     private Activity mactivity;
-    private Button mCancelDownloadBtn,mShareBtn;
-    private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv,mCancelShareTv;
+    private Button mCancelDownloadBtn, mShareBtn;
+    private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv, mCancelShareTv;
+    private boolean isLoadVideoOver, isMiniProgramLoadOver, isMaterialPicLoadOver, isCopyTextOver;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -75,8 +76,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mVideoLoadTv = view.findViewById(R.id.download_load_video_tv);
         mMiniProgramTv = view.findViewById(R.id.download_load_mini_program_tv);
         mMaterialPicTv = view.findViewById(R.id.download_material_pic_tv);
-        mShareBtn=view.findViewById(R.id.download_share_button);
-        mCancelShareTv=view.findViewById(R.id.download_share_cancel_tv);
+        mShareBtn = view.findViewById(R.id.download_share_button);
+        mCancelShareTv = view.findViewById(R.id.download_share_cancel_tv);
         setViewListener();
 
     }
@@ -117,6 +118,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setCopyTextSuccess(String content) {
         mCopyProcessIv.setImageResource(R.drawable.download_success);
         mCopyTextTv.setText(content);
+        isCopyTextOver = true;
+        checkIsAllTaskOver();
     }
 
     /**
@@ -128,6 +131,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setCopyTextFail() {
         mCopyProcessIv.setImageResource(R.drawable.download_error);
+        isCopyTextOver = true;
     }
 
     /**
@@ -140,6 +144,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setVideoLoadSuccess() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
         mVideoLoadTv.setText(String.format("%s下载成功", mVideoDownLoadBean.getDisplayeStr()));
+        isLoadVideoOver = true;
+        checkIsAllTaskOver();
     }
 
     /**
@@ -151,6 +157,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setVideoLoadFail() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_error);
+        isLoadVideoOver = true;
     }
 
     /**
@@ -163,6 +170,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setMiniProgramLoadSuccess(ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_success);
         mMiniProgramTv.setText(String.format("%s下载成功", miniProgramDownLaodBean.getDisplayeStr()));
+        isMiniProgramLoadOver = true;
+        checkIsAllTaskOver();
     }
 
     /**
@@ -175,11 +184,13 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setMiniProgramLoadFail(ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_error);
         mMiniProgramTv.setText(String.format("%s下载失败", miniProgramDownLaodBean.getDisplayeStr()));
+        isMiniProgramLoadOver = true;
     }
 
     public void setMaterialPicLoadSuccess() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
         mMaterialPicTv.setText(String.format("%s下载完成", mImageDownloadBean.getDisplayeStr()));
+        checkIsAllTaskOver();
     }
 
     public void setMaterialPicLoadFail() {
@@ -420,6 +431,29 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     }
 
     /**
+     * @ describe 组合任务中的子任务失败
+     * @author lzl
+     * @ time 2020/11/13 18:31
+     * @ param
+     * @ return
+     */
+    @DownloadGroup.onSubTaskFail
+    void onSubTaskFail(DownloadGroupTask groupTask, DownloadEntity subEntity) {
+        if (mPicUrlList.contains(subEntity.getKey())) {
+            mLoadOverPicNum++;
+            Log.e(TAG, "图片子任务失败" + mLoadOverPicNum + "==" + subEntity.getKey());
+            if (mPicUrlList.size() == mLoadOverPicNum) {
+                /**
+                 * 所有图片子任务执行完成
+                 */
+                setMaterialPicLoadSuccess();
+                mLoadOverPicNum = 0;
+                isMaterialPicLoadOver = true;
+            }
+        }
+    }
+
+    /**
      * @ describe 图片数组子任务下载完成回调
      * @author lzl
      * @ time 2020/11/13 15:19
@@ -439,26 +473,40 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         }
 
         if (mPicUrlList.size() == mLoadOverPicNum) {
+            /**
+             * 所有子任务下载图片完成
+             */
             setMaterialPicLoadSuccess();
             mLoadOverPicNum = 0;
+            isMaterialPicLoadOver = true;
         } else {
-            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mLoadOverPicNum,mPicUrlList.size()));
+            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mLoadOverPicNum, mPicUrlList.size()));
         }
 
 
     }
+
     /**
-     * @ describe 显示分享视图
-     *
+     * @ describe 检测是否所有的任务执行完成，显示分享视图
      * @author lzl
-     *
-     * @ time 2020/11/13 18:14
-     *
+     * @ time 2020/11/13 18:36
      * @ param
-     *
      * @ return
      */
-    private void showShareView(){
+    private void checkIsAllTaskOver() {
+        if (isLoadVideoOver && isMiniProgramLoadOver && isMaterialPicLoadOver && isCopyTextOver) {
+            showShareView();
+        }
+    }
+
+    /**
+     * @ describe 显示分享视图
+     * @author lzl
+     * @ time 2020/11/13 18:14
+     * @ param
+     * @ return
+     */
+    private void showShareView() {
         mShareBtn.setVisibility(View.VISIBLE);
         mCancelShareTv.setVisibility(View.VISIBLE);
         mCancelDownloadBtn.setVisibility(View.GONE);
@@ -485,16 +533,16 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             }
 
         }
-        if(R.id.download_share_button==v.getId()){
+        if (R.id.download_share_button == v.getId()) {
             //进行分享事件
-            Toast.makeText(mactivity,"cancel",Toast.LENGTH_LONG).show();
+            Toast.makeText(mactivity, "cancel", Toast.LENGTH_LONG).show();
             /**
              * TODO 分享方法调用
              */
         }
-        if(R.id.download_share_cancel_tv==v.getId()){
+        if (R.id.download_share_cancel_tv == v.getId()) {
             //取消分享事件
-            if (getDialog() != null){
+            if (getDialog() != null) {
                 getDialog().dismiss();
             }
 
