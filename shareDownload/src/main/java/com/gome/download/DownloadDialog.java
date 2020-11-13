@@ -132,6 +132,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setCopyTextFail() {
         mCopyProcessIv.setImageResource(R.drawable.download_error);
         isCopyTextOver = true;
+        checkIsAllTaskOver();
     }
 
     /**
@@ -158,6 +159,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void setVideoLoadFail() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_error);
         isLoadVideoOver = true;
+        checkIsAllTaskOver();
     }
 
     /**
@@ -185,6 +187,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_error);
         mMiniProgramTv.setText(String.format("%s下载失败", miniProgramDownLaodBean.getDisplayeStr()));
         isMiniProgramLoadOver = true;
+        checkIsAllTaskOver();
     }
 
     public void setMaterialPicLoadSuccess() {
@@ -195,6 +198,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
     public void setMaterialPicLoadFail() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_error);
+        checkIsAllTaskOver();
     }
 
     private long mVideoTaskId;
