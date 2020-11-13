@@ -2,6 +2,9 @@ package com.gome.download;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
+import java.io.File;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -32,9 +35,12 @@ public class ShowDialogUtil {
      * @ return
      */
     public void startLoadResource(ShareResponseBean shareResponseBean) {
-         loadCopyText(shareResponseBean.getCopyString());
-         loadVideo(shareResponseBean.getVideoDownLoad());
-         loadMaterialPic(shareResponseBean.getImageDownload());
+        loadCopyText(shareResponseBean.getCopyString());
+        loadVideo(shareResponseBean.getVideoDownLoad());
+        loadMaterialPic(shareResponseBean.getImageDownload());
+        //for test
+        Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
+        loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
     }
 
     /**
@@ -45,7 +51,7 @@ public class ShowDialogUtil {
      * @ return
      */
     public void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
-        ClipboardUtil.copyText(mActivity,copyStringBean.getCopyStr());
+        ClipboardUtil.copyText(mActivity, copyStringBean.getCopyStr());
         mDownloadDialog.setCopyTextSuccess(copyStringBean.getCopyStr());
     }
 
@@ -68,8 +74,11 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void loadMiniProgram(Bitmap bitmap) {
-
+    public void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
+        String folderName = SDCardManagerUtils.getSDCardCacheDir(mActivity) + "/demos/file/pic";
+                FileManagerUtils.createDir(folderName);
+        FileByteManagerUtils.writeBytesToFile(new File(SDCardManagerUtils.getSDCardCacheDir(mActivity) + "/demos/file/pic/test.jpg"), BitmapUtil.bitmapToByte(bitmap), true);
+        mDownloadDialog.setMiniProgramLoadSuccess(miniProgramDownLaodBean);
     }
 
     /**

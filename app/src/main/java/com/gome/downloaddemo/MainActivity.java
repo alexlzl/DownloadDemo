@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
         copyStringBean.setCopyStr("我是要复制的文案");
         copyStringBean.setDisplayeStr("文案已复制成功");
         shareResponseBean.setCopyString(copyStringBean);
+        //小程序码
+        ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean=new ShareResponseBean.MiniProgramDownLaodBean();
+        miniProgramDownLaodBean.setDisplayeStr("小程序码图片");
+        shareResponseBean.setMiniProgramDownLaod(miniProgramDownLaodBean);
         return shareResponseBean;
     }
 

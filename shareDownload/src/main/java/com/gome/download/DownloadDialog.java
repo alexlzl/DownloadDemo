@@ -155,8 +155,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ param
      * @ return
      */
-    public void setMiniProgramLoadSuccess() {
+    public void setMiniProgramLoadSuccess(ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_success);
+        mMiniProgramTv.setText(String.format("%s下载成功", miniProgramDownLaodBean.getDisplayeStr()));
     }
 
     /**
@@ -166,8 +167,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ param
      * @ return
      */
-    public void setMiniProgramLoadFail() {
+    public void setMiniProgramLoadFail(ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mMiniProgramLoadProcessIv.setImageResource(R.drawable.download_error);
+        mMiniProgramTv.setText(String.format("%s下载失败", miniProgramDownLaodBean.getDisplayeStr()));
     }
 
     public void setMaterialPicLoadSuccess() {
