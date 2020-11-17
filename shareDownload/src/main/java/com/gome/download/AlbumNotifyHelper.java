@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import java.io.File;
 
@@ -189,7 +188,7 @@ public class AlbumNotifyHelper {
         if (mFile.exists()) {
             result = true;
         }
-        Log.e(TAG, "文件不存在 path = " + filePath);
+
         return result;
     }
 }
