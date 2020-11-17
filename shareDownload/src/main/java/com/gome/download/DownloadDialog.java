@@ -47,7 +47,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private boolean isLoadVideoOver, isMiniProgramLoadOver, isMaterialPicLoadOver, isCopyTextOver;
     private static final String VIDEO_PATH = "/demos/file/video/";
     private static final String MATERIAL_PIC_PATH = "/demos/file/multi/";
-    private static final String MINI_PROGRAM_PIC_PATH = "/demos/file/pic/";
+    public static final String MINI_PROGRAM_PIC_PATH = "/demos/file/pic/";
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -181,7 +181,6 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
                     mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
 
                 }
-
                 String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
                 FileManagerUtils.createDir(folderName);
                 mPicTaskId = Aria.download(activity)
@@ -208,8 +207,11 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void saveMiniProgramPic(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean, Activity activity) {
         String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH;
         FileManagerUtils.createDir(folderName);
-        FileByteManagerUtils.writeBytesToFile(new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH + "mini.jpg"), BitmapUtil.bitmapToByte(bitmap), true);
+        String picName = DateUtil.getFileName(activity) + ".jpg";
+        File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH + picName);
+        FileByteManagerUtils.writeBytesToFile(file, BitmapUtil.bitmapToByte(bitmap), true);
         setMiniProgramLoadSuccess(miniProgramDownLaodBean);
+        BitmapUtil.saveImageToSystemGallery(activity, file, picName);
     }
 
     /**
@@ -434,7 +436,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @Download.onTaskComplete
     protected void taskComplete(DownloadTask task) {
         //在这里处理任务完成的状态
-        Log.e(TAG, "Over===========" + task.getPercent()  + task.getKey());
+        Log.e(TAG, "Over===========" + task.getPercent() + task.getKey());
         if (mVideoLoadUrl.equals(task.getKey())) {
             //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
@@ -453,7 +455,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @DownloadGroup.onTaskRunning()
     protected void running(DownloadGroupTask task) {
 
-        Log.e(TAG, "图片组下载======" + task.getPercent()  + task.getKey());
+        Log.e(TAG, "图片组下载======" + task.getPercent() + task.getKey());
     }
 
     /**

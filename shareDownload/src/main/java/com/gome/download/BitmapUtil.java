@@ -12,8 +12,6 @@ import android.provider.MediaStore;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  * @author lzl
@@ -29,30 +27,36 @@ class BitmapUtil {
     }
 
 
-
-    public static void saveImageToGallery(Context context, Bitmap bmp) {
-        // 首先保存图片
-        File appDir = new File(Environment.getExternalStorageDirectory(), "QrCode");
-        if (!appDir.exists()) {
-
-            appDir.mkdir();
-        }
-
-        String fileName = System.currentTimeMillis() + ".jpg";
-        File file = new File(appDir, fileName);
-        try {
-
-            FileOutputStream fos = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-            fos.close();
-        } catch (FileNotFoundException e) {
-
-            e.printStackTrace();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
+    /**
+     * @ describe 保持下载图片到系统图库
+     * @author lzl
+     * @ time 2020/11/17 15:56
+     * @ param
+     * @ return
+     */
+    public static void saveImageToSystemGallery(Context context, File file, String fileName) {
+//        // 首先保存图片
+//        File appDir = new File(Environment.getExternalStorageDirectory(), "QrCode");
+//        if (!appDir.exists()) {
+//
+//            appDir.mkdir();
+//        }
+//
+//        String fileName = System.currentTimeMillis() + ".jpg";
+//        File file = new File(appDir, fileName);
+//        try {
+//
+//            FileOutputStream fos = new FileOutputStream(file);
+//            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
+//            fos.flush();
+//            fos.close();
+//        } catch (FileNotFoundException e) {
+//
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//
+//            e.printStackTrace();
+//        }
 
         // 其次把文件插入到系统图库
         try {
