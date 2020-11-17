@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i=0;i< Url.PICS.length;i++){
             ShareResponseBean.ImageDownloadBean.ImageListBean imageListBean=new ShareResponseBean.ImageDownloadBean.ImageListBean();
             imageListBean.setImageUrl(Url.PICS[i]);
-            imageListBean.setImageSuffix("jpg");
+            imageListBean.setImageSuffix(".jpg");
             listBeanList.add(imageListBean);
         }
         imageDownloadBean.setImageList(listBeanList);

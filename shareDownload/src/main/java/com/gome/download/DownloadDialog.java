@@ -126,6 +126,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private long mVideoTaskId;
     private ShareResponseBean.VideoDownLoadBean mVideoDownLoadBean;
     private String mVideoLoadUrl;
+    private String mVideoFilePath;
+    private String mVideoFile;
+    private String mVideoFileName;
 
     /**
      * @ describe 视频下载
@@ -141,12 +144,15 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                String fileName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH + "test" + videoDownLoadBean.getVideoSuffix();
+                mVideoFile=SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
+                String fileName=DateUtil.getFileName(activity);
+                mVideoFileName= fileName + videoDownLoadBean.getVideoSuffix();
+                mVideoFilePath = mVideoFile  + mVideoFileName;
                 String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
                 FileManagerUtils.createDir(folderName);
                 mVideoTaskId = Aria.download(activity)
                         .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
-                        .setFilePath(fileName) //设置文件保存的完整路径
+                        .setFilePath(mVideoFilePath) //设置文件保存的完整路径
                         .create();   //创建并启动下载
             }
 
@@ -160,6 +166,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private List<String> mPicUrlList;
     private long mPicTaskId;
     private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
+    private List<String> mMaterialPicFileName;
+    private List<File> mMaterialPicFile;
 
     /**
      * @ describe 图片素材下载
@@ -176,16 +184,23 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
                 mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
                 mImageDownloadBean = imageDownloadBean;
                 mPicUrlList = new ArrayList<>(); // 创建一个http url集合
+                mMaterialPicFileName = new ArrayList<>();
+                mMaterialPicFile = new ArrayList<>();
                 for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
 
                     mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
-
+                    String fileName = DateUtil.getFileName(activity) + imageDownloadBean.getImageList().get(i).getImageSuffix();
+                    mMaterialPicFileName.add(fileName);
+                    File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + fileName);
+                    mMaterialPicFile.add(file);
                 }
+
+
                 String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
                 FileManagerUtils.createDir(folderName);
                 mPicTaskId = Aria.download(activity)
                         .loadGroup(mPicUrlList) // 设置url集合
-                        .setDirPath(folderName)   // 设置该组合任务的文件夹路径
+                        .setDirPath(folderName).setSubFileName(mMaterialPicFileName)  // 设置该组合任务的文件夹路径
                         .unknownSize().ignoreFilePathOccupy()  // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
                         .create();
             }
@@ -441,6 +456,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
             setVideoLoadSuccess();
+            AlbumNotifyHelper.insertVideoToMediaStore(mActivity,mVideoFilePath,0,BitmapUtil.getLocalVideoDuration(mVideoFilePath),BitmapUtil.getWidth(mVideoFilePath),BitmapUtil.getHeight(mVideoFilePath));
         }
 
     }
@@ -520,7 +536,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
         if (mPicUrlList.contains(subEntity.getKey())) {
             mLoadOverPicNum++;
-            Log.e(TAG, "子图片组下载完成======" + mLoadOverPicNum + "==" + subEntity.getKey());
+            Log.e(TAG, "某个子图片下载完成======" + mLoadOverPicNum + "==" + subEntity.getKey());
 
         }
 
@@ -528,9 +544,14 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             /**
              * 所有子任务下载图片完成
              */
+            Log.e(TAG, "所有图片子任务下载完成======" + mLoadOverPicNum);
             setMaterialPicLoadSuccess();
             mLoadOverPicNum = 0;
             isMaterialPicLoadOver = true;
+            for (int i = 0; i < mMaterialPicFile.size(); i++) {
+                BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
+            }
+
         } else {
             mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mLoadOverPicNum, mPicUrlList.size()));
         }

@@ -8,7 +8,7 @@ package com.gome.download;
 public class Url {
     public static final String URL1 =
             "https://cdn.llscdn.com/yy/files/tkzpx40x-lls-LLS-5.7-785-20171108-111118.apk";
-    public static final String URL2 = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4";
+    public static final String URL2 = "http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4";
     public static final String URL3 = "https://articles.csdn.net/uploads/allimg/110527/16354R640-1.jpg";
     public static final String[] PICS = {"https://articles.csdn.net/uploads/allimg/110527/16354R640-1.jpg",
             "https://gfs17.gomein.net.cn/T1IxL4BvYT1RCvBVdK_800_pc.jpg",

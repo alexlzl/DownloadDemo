@@ -1,8 +1,12 @@
 package com.gome.download;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -84,4 +88,106 @@ class BitmapUtil {
 
     }
 
+
+    public static void saveVideoToSystem(Activity activity, File filePath, String type) {
+//        // 扫描本地mp4文件并添加到本地视频库
+//        MediaScannerConnection mMediaScanner = new MediaScannerConnection(activity, null);
+//        mMediaScanner.connect();
+//        if (mMediaScanner !=null && mMediaScanner.isConnected()) {
+//            mMediaScanner.scanFile(filePath,type);
+//        }
+
+
+        ContentResolver localContentResolver = activity.getContentResolver();
+        ContentValues localContentValues = getVideoContentValues(activity, filePath, System.currentTimeMillis());
+        Uri localUri = localContentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, localContentValues);
+    }
+
+    public static ContentValues getVideoContentValues(Context paramContext, File paramFile, long paramLong) {
+        ContentValues localContentValues = new ContentValues();
+        localContentValues.put("title", paramFile.getName());
+        localContentValues.put("_display_name", paramFile.getName());
+        localContentValues.put("mime_type", "video/3gp");
+        localContentValues.put("datetaken", Long.valueOf(paramLong));
+        localContentValues.put("date_modified", Long.valueOf(paramLong));
+        localContentValues.put("date_added", Long.valueOf(paramLong));
+        localContentValues.put("_data", paramFile.getAbsolutePath());
+        localContentValues.put("_size", Long.valueOf(paramFile.length()));
+        return localContentValues;
+    }
+
+    public static void saveVideo(Activity activity,File file){
+        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        intent.setData(Uri.fromFile(file ));
+        activity.sendBroadcast(intent);//发送一个广播
+    }
+    /**
+     * get Local video duration
+     *
+     * @return
+     */
+    public static long getLocalVideoDuration(String videoPath) {
+//除以 1000 返回是秒
+        long  duration;
+        try {
+            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            mmr.setDataSource(videoPath);
+            duration = Integer.parseInt(mmr.extractMetadata
+                    (MediaMetadataRetriever.METADATA_KEY_DURATION));
+
+//时长(毫秒)
+//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+//宽
+            String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+//高
+            String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return duration;
+    }
+
+    public static int getWidth(String videoPath){
+        //除以 1000 返回是秒
+        int widthI;
+        try {
+            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            mmr.setDataSource(videoPath);
+
+
+//时长(毫秒)
+//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+//宽
+            String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+            widthI=Integer.valueOf(width);
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return widthI;
+    }
+    public static int getHeight(String videoPath){
+        //除以 1000 返回是秒
+        int heightI;
+        try {
+            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            mmr.setDataSource(videoPath);
+
+
+//时长(毫秒)
+//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+
+//高
+            String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+            heightI=Integer.valueOf(height);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+        return heightI;
+    }
 }
