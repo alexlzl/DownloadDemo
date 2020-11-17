@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -23,6 +24,7 @@ import com.arialyy.aria.core.download.DownloadEntity;
 import com.arialyy.aria.core.task.DownloadGroupTask;
 import com.arialyy.aria.core.task.DownloadTask;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,40 +35,47 @@ import pl.droidsonroids.gif.GifImageView;
 
 /**
  * @author lzl
- * @ describe
+ * @ describe 下载弹窗
  * @ time 2020/11/11 16:03
  */
 public class DownloadDialog extends DialogFragment implements View.OnClickListener {
     private GifImageView mCopyProcessIv, mVideoLoadProcessIv, mMiniProgramLoadProcessIv, mMaterialPicLoadProcessIv;
     private static final String TAG = "TAG";
-    private Activity mactivity;
+    private Activity mActivity;
     private Button mCancelDownloadBtn, mShareBtn;
     private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv, mCancelShareTv;
     private boolean isLoadVideoOver, isMiniProgramLoadOver, isMaterialPicLoadOver, isCopyTextOver;
+    private static final String VIDEO_PATH = "/demos/file/video/";
+    private static final String MATERIAL_PIC_PATH = "/demos/file/multi/";
+    private static final String MINI_PROGRAM_PIC_PATH = "/demos/file/pic/";
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        Aria.download(this).register(); // 正确的写法
-        mactivity = (Activity) context;//mCtx 是成员变量，上下文引用
+        Aria.download(this).register();
+        mActivity = (Activity) context;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.download_dialog, container, false);
-        return view;
+        return inflater.inflate(R.layout.download_dialog, container, false);
     }
 
+    /**
+     * @ describe  此方法在视图View已经创建后返回的，但是这个view 还没有添加到父级中。
+     * 我们在这里可以重新设定view的各个数据，但是不能修改对话框最外层的ViewGroup的布局参数。
+     * 因为这里的view还没添加到父级中，我们需要在下面onStart生命周期里修改对话框尺寸参数
+     * @author lzl
+     * @ time 2020/11/17 14:55
+     * @ param
+     * @ return
+     */
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        /*
-        此方法在视图View已经创建后返回的，但是这个view 还没有添加到父级中。
-        我们在这里可以重新设定view的各个数据，但是不能修改对话框最外层的ViewGroup的布局参数。
-        因为这里的view还没添加到父级中，我们需要在下面onStart生命周期里修改对话框尺寸参数
-         */
+
         mCopyProcessIv = view.findViewById(R.id.download_copy_process);
         mVideoLoadProcessIv = view.findViewById(R.id.download_video_process);
         mMiniProgramLoadProcessIv = view.findViewById(R.id.download_mini_program_process);
@@ -88,11 +97,16 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mCancelShareTv.setOnClickListener(this);
     }
 
+
+    /**
+     * @ describe  因为View在添加后,对话框最外层的ViewGroup并不知道我们导入的View所需要的的宽度。 所以我们需要在onStart生命周期里修改对话框尺寸参数
+     * @author lzl
+     * @ time 2020/11/17 14:55
+     * @ param
+     * @ return
+     */
     @Override
     public void onStart() {
-        /*
-            因为View在添加后,对话框最外层的ViewGroup并不知道我们导入的View所需要的的宽度。 所以我们需要在onStart生命周期里修改对话框尺寸参数
-         */
 
         Dialog dialog = getDialog();
         if (dialog != null) {
@@ -106,6 +120,96 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         }
 
         super.onStart();
+    }
+
+
+    private long mVideoTaskId;
+    private ShareResponseBean.VideoDownLoadBean mVideoDownLoadBean;
+    private String mVideoLoadUrl;
+
+    /**
+     * @ describe 视频下载
+     * @author lzl
+     * @ time 2020/11/13 11:48
+     * @ param
+     * @ return
+     */
+    public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
+        mVideoDownLoadBean = videoDownLoadBean;
+        mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
+        mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
+        PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
+            @Override
+            public void passPermissions() {
+                String fileName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH + "test" + videoDownLoadBean.getVideoSuffix();
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
+                FileManagerUtils.createDir(folderName);
+                mVideoTaskId = Aria.download(activity)
+                        .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
+                        .setFilePath(fileName) //设置文件保存的完整路径
+                        .create();   //创建并启动下载
+            }
+
+            @Override
+            public void forbidPermissions() {
+
+            }
+        });
+    }
+
+    private List<String> mPicUrlList;
+    private long mPicTaskId;
+    private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
+
+    /**
+     * @ describe 图片素材下载
+     * @author lzl
+     * @ time 2020/11/13 11:48
+     * @ param
+     * @ return
+     */
+    public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
+
+        PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
+            @Override
+            public void passPermissions() {
+                mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
+                mImageDownloadBean = imageDownloadBean;
+                mPicUrlList = new ArrayList<>(); // 创建一个http url集合
+                for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
+
+                    mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
+
+                }
+
+                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
+                FileManagerUtils.createDir(folderName);
+                mPicTaskId = Aria.download(activity)
+                        .loadGroup(mPicUrlList) // 设置url集合
+                        .setDirPath(folderName)   // 设置该组合任务的文件夹路径
+                        .unknownSize().ignoreFilePathOccupy()  // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
+                        .create();
+            }
+
+            @Override
+            public void forbidPermissions() {
+
+            }
+        });
+    }
+
+    /**
+     * @ describe 存储小程序图片
+     * @author lzl
+     * @ time 2020/11/17 14:44
+     * @ param
+     * @ return
+     */
+    public void saveMiniProgramPic(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean, Activity activity) {
+        String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH;
+        FileManagerUtils.createDir(folderName);
+        FileByteManagerUtils.writeBytesToFile(new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH + "mini.jpg"), BitmapUtil.bitmapToByte(bitmap), true);
+        setMiniProgramLoadSuccess(miniProgramDownLaodBean);
     }
 
     /**
@@ -190,90 +294,29 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         checkIsAllTaskOver();
     }
 
+    /**
+     * @ describe 素材图片下载成功
+     * @author lzl
+     * @ time 2020/11/17 14:28
+     * @ param
+     * @ return
+     */
     public void setMaterialPicLoadSuccess() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
         mMaterialPicTv.setText(String.format("%s下载完成", mImageDownloadBean.getDisplayeStr()));
         checkIsAllTaskOver();
     }
 
+    /**
+     * @ describe 素材图片下载失败
+     * @author lzl
+     * @ time 2020/11/17 14:28
+     * @ param
+     * @ return
+     */
     public void setMaterialPicLoadFail() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_error);
         checkIsAllTaskOver();
-    }
-
-    private long mVideoTaskId;
-    private ShareResponseBean.VideoDownLoadBean mVideoDownLoadBean;
-    private String mVideoLoadUrl;
-
-    /**
-     * @ describe 视频下载
-     * @author lzl
-     * @ time 2020/11/13 11:48
-     * @ param
-     * @ return
-     */
-    public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
-        mVideoDownLoadBean = videoDownLoadBean;
-        mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
-        mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
-        PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
-            @Override
-            public void passPermissions() {
-                String fileName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/video/test.mp4";
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/video";
-                FileManagerUtils.createDir(folderName);
-                mVideoTaskId = Aria.download(activity)
-                        .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
-                        .setFilePath(fileName) //设置文件保存的完整路径
-                        .create();   //创建并启动下载
-            }
-
-            @Override
-            public void forbidPermissions() {
-
-            }
-        });
-    }
-
-    private List<String> mPicUrlList;
-    private long mPicTaskId;
-    private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
-
-    /**
-     * @ describe 图片素材下载
-     * @author lzl
-     * @ time 2020/11/13 11:48
-     * @ param
-     * @ return
-     */
-    public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
-
-        PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
-            @Override
-            public void passPermissions() {
-                mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
-                mImageDownloadBean = imageDownloadBean;
-                mPicUrlList = new ArrayList<>(); // 创建一个http url集合
-                for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
-
-                    mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
-
-                }
-
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + "/demos/file/multi";
-                FileManagerUtils.createDir(folderName);
-                mPicTaskId = Aria.download(activity)
-                        .loadGroup(mPicUrlList) // 设置url集合
-                        .setDirPath(folderName)   // 设置该组合任务的文件夹路径
-                        .unknownSize().ignoreFilePathOccupy()            // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
-                        .create();
-            }
-
-            @Override
-            public void forbidPermissions() {
-
-            }
-        });
     }
 
     @Override
@@ -323,7 +366,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     //在这里处理任务执行中的状态，如进度进度条的刷新
     @Download.onTaskRunning
     protected void running(DownloadTask task) {
-        Log.e(TAG, "Percent===========" + task.getPercent() + "======" + task.getKey());
+        Log.e(TAG, "任务执行中===========" + task.getPercent() + "======" + task.getKey());
 
     }
 
@@ -349,9 +392,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @Download.onTaskStop
     protected void downloadStop(DownloadTask task) {
         Log.e(TAG, "Stop===========" + task.getKey());
-        if (mVideoLoadUrl.equals(task.getKey())) {
 
-        }
     }
 
     /**
@@ -376,6 +417,11 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @Download.onTaskFail
     protected void downloadTaskFail(DownloadTask task) {
         Log.e(TAG, "Fail===========" + task.getKey());
+        if (mVideoLoadUrl.equals(task.getKey())) {
+            //视频下载失败
+            Log.e(TAG, "FAIL===========视频任务执行失败");
+            setVideoLoadFail();
+        }
     }
 
     /**
@@ -388,7 +434,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @Download.onTaskComplete
     protected void taskComplete(DownloadTask task) {
         //在这里处理任务完成的状态
-        Log.e(TAG, "Over===========" + task.getPercent() + "测试======" + task.getKey());
+        Log.e(TAG, "Over===========" + task.getPercent()  + task.getKey());
         if (mVideoLoadUrl.equals(task.getKey())) {
             //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
@@ -407,7 +453,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @DownloadGroup.onTaskRunning()
     protected void running(DownloadGroupTask task) {
 
-        Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载======" + task.getKey());
+        Log.e(TAG, "图片组下载======" + task.getPercent()  + task.getKey());
     }
 
     /**
@@ -419,7 +465,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     @DownloadGroup.onTaskComplete()
     protected void taskComplete(DownloadGroupTask task) {
-        Log.e(TAG, "Percent===========" + task.getPercent() + "图片组下载完成======" + task.getKey());
+        Log.e(TAG, "图片组下载完成======" + task.getPercent() + task.getKey());
     }
 
     /**
@@ -539,7 +585,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         }
         if (R.id.download_share_button == v.getId()) {
             //进行分享事件
-            Toast.makeText(mactivity, "cancel", Toast.LENGTH_LONG).show();
+            Toast.makeText(mActivity, "cancel", Toast.LENGTH_LONG).show();
             /**
              * TODO 分享方法调用
              */

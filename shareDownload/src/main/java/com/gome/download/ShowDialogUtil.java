@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import java.io.File;
-
 import androidx.fragment.app.FragmentManager;
 
 /**
@@ -22,9 +20,12 @@ public class ShowDialogUtil {
     }
 
     public void showDialog(FragmentManager fragmentManager) {
+        if (!ButtonUtils.isFastClick()) {
+            return;
+        }
         mDownloadDialog = new DownloadDialog();
 //        mDownloadDialog.show(fragmentManager, "aa");
-        mDownloadDialog.showNow(fragmentManager, "aa");
+        mDownloadDialog.showNow(fragmentManager, "DownloadDialog");
     }
 
     /**
@@ -75,10 +76,7 @@ public class ShowDialogUtil {
      * @ return
      */
     public void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
-        String folderName = SDCardManagerUtils.getSDCardCacheDir(mActivity) + "/demos/file/pic";
-                FileManagerUtils.createDir(folderName);
-        FileByteManagerUtils.writeBytesToFile(new File(SDCardManagerUtils.getSDCardCacheDir(mActivity) + "/demos/file/pic/test.jpg"), BitmapUtil.bitmapToByte(bitmap), true);
-        mDownloadDialog.setMiniProgramLoadSuccess(miniProgramDownLaodBean);
+        mDownloadDialog.saveMiniProgramPic(bitmap,miniProgramDownLaodBean, mActivity);
     }
 
     /**

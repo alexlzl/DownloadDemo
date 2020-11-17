@@ -13,12 +13,12 @@ import android.util.Log;
  */
 class ClipboardUtil {
 
-    public static void copyText(Context context,String content){
+    public static void copyText(Context context, String content) {
         //获取剪贴板管理器：
         ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-// 创建普通字符型ClipData
+        // 创建普通字符型ClipData
         ClipData mClipData = ClipData.newPlainText("Label", content);
-// 将ClipData内容放到系统剪贴板里。
+       // 将ClipData内容放到系统剪贴板里。
         cm.setPrimaryClip(mClipData);
     }
 
@@ -40,7 +40,8 @@ class ClipboardUtil {
      * 注册剪切板复制、剪切事件监听
      */
     private ClipboardManager mClipboardManager;
-    private  ClipboardManager.OnPrimaryClipChangedListener mOnPrimaryClipChangedListener;
+    private ClipboardManager.OnPrimaryClipChangedListener mOnPrimaryClipChangedListener;
+
     private void registerClipEvents(Context context) {
         mClipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         mOnPrimaryClipChangedListener = new ClipboardManager.OnPrimaryClipChangedListener() {

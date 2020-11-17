@@ -1,6 +1,5 @@
 package com.gome.downloaddemo;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -66,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
+
         ShowDialogUtil showDialog=new ShowDialogUtil(this);
         showDialog.showDialog(getSupportFragmentManager());
         showDialog.startLoadResource(getShareResponseBean());
@@ -93,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
 //
 //            }
 //        });
-        ShowDialogUtil showDialog=new ShowDialogUtil(this);
-        showDialog.showDialog(getSupportFragmentManager());
-        showDialog.loadVideo(null);
+//        ShowDialogUtil showDialog=new ShowDialogUtil(this);
+//        showDialog.showDialog(getSupportFragmentManager());
+//        showDialog.loadVideo(null);
     }
 
     private long picTaskId;
@@ -119,9 +119,9 @@ public class MainActivity extends AppCompatActivity {
 ////
 ////            }
 ////        });
-        ShowDialogUtil showDialog=new ShowDialogUtil(this);
-        showDialog.showDialog(getSupportFragmentManager());
-        showDialog.loadMaterialPic(null);
+//        ShowDialogUtil showDialog=new ShowDialogUtil(this);
+//        showDialog.showDialog(getSupportFragmentManager());
+//        showDialog.loadMaterialPic(null);
     }
 
     @Override
@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "multiple", Toast.LENGTH_LONG).show();
 //        DownloadDialog d = new DownloadDialog();
 //        d.show(getSupportFragmentManager(),"aa");
-      startActivity(new Intent(this,MainActivity2.class));
+//      startActivity(new Intent(this,MainActivity2.class));
     }
 
     public ShareResponseBean getShareResponseBean(){
