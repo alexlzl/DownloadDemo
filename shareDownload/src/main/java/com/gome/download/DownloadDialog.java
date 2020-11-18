@@ -188,10 +188,13 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
                 .create();   //创建并启动下载
     }
 
+    //图片素材地址
     private List<String> mPicUrlList;
     private long mPicTaskId;
     private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
+    //图片素材名称
     private List<String> mMaterialPicFileName;
+    //图片素材对应文件
     private List<File> mMaterialPicFile;
 
     /**
@@ -297,7 +300,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     }
 
     /**
-     * @ describe 设置小程序码下载成功
+     * @ describe 设置小程序图片保存成功
      * @author lzl
      * @ time 2020/11/12 13:58
      * @ param
@@ -311,7 +314,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     }
 
     /**
-     * @ describe  设置小程序码下载失败
+     * @ describe  设置小程序图片保存失败
      * @author lzl
      * @ time 2020/11/12 13:58
      * @ param
@@ -333,7 +336,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setMaterialPicLoadSuccess() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
-        mMaterialPicTv.setText(String.format("%s下载完成", mImageDownloadBean.getDisplayeStr()));
+        mMaterialPicTv.setText(String.format("%s下载成功(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
         checkIsAllTaskOver();
     }
 
@@ -510,9 +513,10 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     void onSubTaskRunning(DownloadGroupTask groupTask, DownloadEntity subEntity) {
 
     }
-
+    //素材图片下载失败的次数
+    private int mMaterialPicLoadFailNum;
     /**
-     * @ describe 组合任务中的子任务失败
+     * @ describe 图片数组子任务下载失败回调
      * @author lzl
      * @ time 2020/11/13 18:31
      * @ param
@@ -522,14 +526,24 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     void onSubTaskFail(DownloadGroupTask groupTask, DownloadEntity subEntity) {
         if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
             mLoadOverPicNum++;
-            Log.e(TAG, "图片子任务失败" + mLoadOverPicNum + "==" + subEntity.getKey());
+            mMaterialPicLoadFailNum++;
+            Log.e(TAG, "图片子任务失败==失败次数==="+mMaterialPicLoadFailNum + "==" + subEntity.getKey());
             if (mPicUrlList.size() == mLoadOverPicNum) {
                 /**
-                 * 所有图片子任务执行完成
+                 * 所有图片子任务执行完成==============
                  */
-                setMaterialPicLoadSuccess();
-                mLoadOverPicNum = 0;
                 isMaterialPicLoadOver = true;
+                if(mMaterialPicLoadFailNum!=mPicUrlList.size()){
+                    //非所有图片下载失败表示成功
+                    setMaterialPicLoadSuccess();
+                }else{
+                    //所有图片下载失败显示失败视图
+                    setMaterialPicLoadFail();
+                }
+
+                mLoadOverPicNum = 0;
+                mMaterialPicLoadFailNum=0;
+                mMaterialPicLoadSuccessNum=0;
             }
         }
     }
@@ -541,32 +555,38 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ param
      * @ return
      */
+    //素材图片任务组执行完成的数量(成功+失败)
     private int mLoadOverPicNum;
-
+    //素材图片下载成功的次数
+    private int mMaterialPicLoadSuccessNum;
     @DownloadGroup.onSubTaskComplete
     void onSubTaskComplete(DownloadGroupTask groupTask, DownloadEntity subEntity) {
         // 子任务完成的回调
 
         if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
+            mMaterialPicLoadSuccessNum++;
             mLoadOverPicNum++;
-            Log.e(TAG, "某个子图片下载完成======" + mLoadOverPicNum + "==" + subEntity.getKey());
+            Log.e(TAG, "某个子图片下载完成======成功次数==" + mMaterialPicLoadSuccessNum + "==" + subEntity.getKey());
 
         }
 
         if (mPicUrlList != null && mPicUrlList.size() == mLoadOverPicNum) {
             /**
-             * 所有子任务下载图片完成
+             * 所有子任务下载图片完成====================
              */
             Log.e(TAG, "所有图片子任务下载完成======" + mLoadOverPicNum);
             isMaterialPicLoadOver = true;
             setMaterialPicLoadSuccess();
             mLoadOverPicNum = 0;
+            mMaterialPicLoadSuccessNum=0;
+            mMaterialPicLoadFailNum=0;
+            //进行系统相册同步
             for (int i = 0; i < mMaterialPicFile.size(); i++) {
                 BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
             }
 
         } else {
-            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mLoadOverPicNum, mPicUrlList.size()));
+            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
         }
 
 

@@ -39,28 +39,7 @@ class BitmapUtil {
      * @ return
      */
     public static void saveImageToSystemGallery(Context context, File file, String fileName) {
-//        // 首先保存图片
-//        File appDir = new File(Environment.getExternalStorageDirectory(), "QrCode");
-//        if (!appDir.exists()) {
-//
-//            appDir.mkdir();
-//        }
-//
-//        String fileName = System.currentTimeMillis() + ".jpg";
-//        File file = new File(appDir, fileName);
-//        try {
-//
-//            FileOutputStream fos = new FileOutputStream(file);
-//            bmp.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-//            fos.flush();
-//            fos.close();
-//        } catch (FileNotFoundException e) {
-//
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//
-//            e.printStackTrace();
-//        }
+
 
         // 其次把文件插入到系统图库
         try {
@@ -90,12 +69,6 @@ class BitmapUtil {
 
 
     public static void saveVideoToSystem(Activity activity, File filePath, String type) {
-//        // 扫描本地mp4文件并添加到本地视频库
-//        MediaScannerConnection mMediaScanner = new MediaScannerConnection(activity, null);
-//        mMediaScanner.connect();
-//        if (mMediaScanner !=null && mMediaScanner.isConnected()) {
-//            mMediaScanner.scanFile(filePath,type);
-//        }
 
 
         ContentResolver localContentResolver = activity.getContentResolver();
@@ -116,30 +89,31 @@ class BitmapUtil {
         return localContentValues;
     }
 
-    public static void saveVideo(Activity activity,File file){
+    public static void saveVideo(Activity activity, File file) {
         Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        intent.setData(Uri.fromFile(file ));
+        intent.setData(Uri.fromFile(file));
         activity.sendBroadcast(intent);//发送一个广播
     }
+
     /**
      * get Local video duration
      *
      * @return
      */
     public static long getLocalVideoDuration(String videoPath) {
-//除以 1000 返回是秒
-        long  duration;
+         //除以 1000 返回是秒
+        long duration;
         try {
-            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(videoPath);
             duration = Integer.parseInt(mmr.extractMetadata
                     (MediaMetadataRetriever.METADATA_KEY_DURATION));
 
-//时长(毫秒)
-//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
-//宽
+            //时长(毫秒)
+            //String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+            //宽
             String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-//高
+           //高
             String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
 
         } catch (Exception e) {
@@ -149,19 +123,19 @@ class BitmapUtil {
         return duration;
     }
 
-    public static int getWidth(String videoPath){
+    public static int getWidth(String videoPath) {
         //除以 1000 返回是秒
         int widthI;
         try {
-            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(videoPath);
 
 
-//时长(毫秒)
-//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
-//宽
+          //时长(毫秒)
+          //String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+          //宽
             String width = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
-            widthI=Integer.valueOf(width);
+            widthI = Integer.valueOf(width);
 
 
         } catch (Exception e) {
@@ -170,20 +144,21 @@ class BitmapUtil {
         }
         return widthI;
     }
-    public static int getHeight(String videoPath){
+
+    public static int getHeight(String videoPath) {
         //除以 1000 返回是秒
         int heightI;
         try {
-            MediaMetadataRetriever mmr = new  MediaMetadataRetriever();
+            MediaMetadataRetriever mmr = new MediaMetadataRetriever();
             mmr.setDataSource(videoPath);
 
 
-//时长(毫秒)
-//String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
+            //时长(毫秒)
+           //String duration = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_DURATION);
 
-//高
+            //高
             String height = mmr.extractMetadata(android.media.MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
-            heightI=Integer.valueOf(height);
+            heightI = Integer.valueOf(height);
         } catch (Exception e) {
             e.printStackTrace();
             return 0;
@@ -191,7 +166,7 @@ class BitmapUtil {
         return heightI;
     }
 
-    public static void saveVideoToSystem(Activity activity,File file){
+    public static void saveVideoToSystem(Activity activity, File file) {
         activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file)));
     }
 }

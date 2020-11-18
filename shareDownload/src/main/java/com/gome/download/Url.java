@@ -18,4 +18,12 @@ public class Url {
             "https://gfs17.gomein.net.cn/T1EchQBsJT1RCvBVdK_800_pc.jpg"
 
     };
+//    public static final String[] PICS = {"https://articles.csdn.net/uploads/allimg/110527/16354R640-.jpg",
+//            "https://gfs17.gomein.net.cn/T1IxL4BvYT1RCvBVdK_800_pc.jpg",
+//            "https://gfs17.gomein.net.cn/T1UAb7BvYv1RCvBVdK_800_pc.jpg",
+//            "https://gfs17.gomein.net.cn/T1E9K7B7d_1RCvBVdK_800_pc.jpg",
+//            "https://gfs17.gomein.net.cn/T1LAV7BCDv1RCvBVdK_800_pc.jpg",
+//            "https://gfs17.gomein.net.cn/T1EchQBsJT1RCvBVdK_800_pc.jpg"
+//
+//    };
 }
