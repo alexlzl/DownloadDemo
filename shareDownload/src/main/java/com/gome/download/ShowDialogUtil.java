@@ -35,13 +35,29 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void startLoadResource(ShareResponseBean shareResponseBean) {
+    public void startLoadResource(final ShareResponseBean shareResponseBean) {
         loadCopyText(shareResponseBean.getCopyString());
-        loadVideo(shareResponseBean.getVideoDownLoad());
-        loadMaterialPic(shareResponseBean.getImageDownload());
-        //for test
-        Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
-        loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
+        mDownloadDialog.setCall(new DownloadDialog.IPermissionCallBack() {
+            @Override
+            public void success() {
+                loadVideo(shareResponseBean.getVideoDownLoad());
+                loadMaterialPic(shareResponseBean.getImageDownload());
+                //for test
+                Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
+                loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        });
+        mDownloadDialog.getPermission(mActivity);
+//        loadVideo(shareResponseBean.getVideoDownLoad());
+//        loadMaterialPic(shareResponseBean.getImageDownload());
+//        //for test
+//        Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
+//        loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
     }
 
     /**
@@ -76,7 +92,7 @@ public class ShowDialogUtil {
      * @ return
      */
     public void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
-        mDownloadDialog.saveMiniProgramPic(bitmap,miniProgramDownLaodBean, mActivity);
+        mDownloadDialog.saveMiniProgramPic(bitmap, miniProgramDownLaodBean, mActivity);
     }
 
     /**
