@@ -2,7 +2,6 @@ package com.gome.download;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -48,9 +47,6 @@ public class ShowDialogUtil {
             public void success() {
                 loadVideo(shareResponseBean.getVideoDownLoad());
                 loadMaterialPic(shareResponseBean.getImageDownload());
-                //for test
-                Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
-                loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
             }
 
             @Override
@@ -93,7 +89,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    private void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
+    public void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mDownloadDialog.saveMiniProgramPic(bitmap, miniProgramDownLaodBean, mActivity);
     }
 

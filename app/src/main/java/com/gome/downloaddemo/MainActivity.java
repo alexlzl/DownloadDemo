@@ -70,8 +70,11 @@ public class MainActivity extends AppCompatActivity {
 //        ShowDialogUtil showDialog=new ShowDialogUtil(this);
 //        showDialog.showDialog(getSupportFragmentManager());
 //        showDialog.startLoadResource(getShareResponseBean());
-        ShowDialogUtil.getInstance(this).showDialog(getSupportFragmentManager(), getShareResponseBean());
-
+        ShowDialogUtil showDialogUtil= ShowDialogUtil.getInstance(this);
+        showDialogUtil .showDialog(getSupportFragmentManager(), getShareResponseBean());
+        //for test js回调获取bitmap
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), com.gome.download.R.drawable.test);
+        showDialogUtil. loadMiniProgram(bitmap, getShareResponseBean().getMiniProgramDownLaod());
     }
 
     private long videoTaskId;
