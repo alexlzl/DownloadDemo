@@ -151,7 +151,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 //                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
 //                FileManagerUtils.createDir(folderName);
                 File videoFilePath = activity.getExternalFilesDir(null);
-                String pathS = videoFilePath.getPath() + "/share";
+                String pathS = videoFilePath.getPath() + "/share/video";
                 File videoFile = new File(pathS);
                 if (!videoFile.exists()) {
                     videoFile.mkdir();
