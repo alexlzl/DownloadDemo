@@ -45,9 +45,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private Button mCancelDownloadBtn, mShareBtn;
     private TextView mMaterialPicTv, mCopyTextTv, mVideoLoadTv, mMiniProgramTv, mCancelShareTv;
     private boolean isLoadVideoOver, isMiniProgramLoadOver, isMaterialPicLoadOver, isCopyTextOver;
-    private static final String VIDEO_PATH = "/demos/file/video/";
-    private static final String MATERIAL_PIC_PATH = "/demos/file/multi/";
-    public static final String MINI_PROGRAM_PIC_PATH = "/demos/file/pic/";
+    private static final String VIDEO_PATH = "/share/video";
+    private static final String MATERIAL_PIC_PATH = "/share/material/pictures/";
+    public static final String MINI_PROGRAM_PIC_PATH = "/share/miniProgram/pictures/";
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -129,7 +129,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private String mVideoFilePath;
     private String mVideoFile;
     private String mVideoFileName;
-
+    File file;
     /**
      * @ describe 视频下载
      * @author lzl
@@ -144,15 +144,22 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         PermissionsManagerUtils.getInstance().checkPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionsManagerUtils.IPermissionsResult() {
             @Override
             public void passPermissions() {
-                mVideoFile=SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
+//                mVideoFile=SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
                 String fileName=DateUtil.getFileName(activity);
                 mVideoFileName= fileName + videoDownLoadBean.getVideoSuffix();
-                mVideoFilePath = mVideoFile  + mVideoFileName;
-                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
-                FileManagerUtils.createDir(folderName);
+//                mVideoFilePath = mVideoFile  + mVideoFileName;
+//                String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + VIDEO_PATH;
+//                FileManagerUtils.createDir(folderName);
+                File videoFilePath = activity.getExternalFilesDir(null);
+                String pathS = videoFilePath.getPath() + "/share";
+                File videoFile = new File(pathS);
+                if (!videoFile.exists()) {
+                    videoFile.mkdir();
+                }
+                 file = new File(videoFile, mVideoFileName);
                 mVideoTaskId = Aria.download(activity)
                         .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
-                        .setFilePath(mVideoFilePath) //设置文件保存的完整路径
+                        .setFilePath(pathS+"/"+mVideoFileName) //设置文件保存的完整路径
                         .create();   //创建并启动下载
             }
 
@@ -456,7 +463,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
             setVideoLoadSuccess();
-            AlbumNotifyHelper.insertVideoToMediaStore(mActivity,mVideoFilePath,0,BitmapUtil.getLocalVideoDuration(mVideoFilePath),BitmapUtil.getWidth(mVideoFilePath),BitmapUtil.getHeight(mVideoFilePath));
+//            AlbumNotifyHelper.insertVideoToMediaStore(mActivity,mVideoFilePath,0,BitmapUtil.getLocalVideoDuration(mVideoFilePath),BitmapUtil.getWidth(mVideoFilePath),BitmapUtil.getHeight(mVideoFilePath));
+             BitmapUtil.save1(mActivity,file);
         }
 
     }

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arialyy.aria.core.Aria;
+import com.gome.download.F;
 import com.gome.download.FileByteManagerUtils;
 import com.gome.download.PermissionsManagerUtils;
 import com.gome.download.SDCardManagerUtils;
@@ -135,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
 //        DownloadDialog d = new DownloadDialog();
 //        d.show(getSupportFragmentManager(),"aa");
 //      startActivity(new Intent(this,MainActivity2.class));
+        new F().downMp4(this);
     }
 
     public ShareResponseBean getShareResponseBean(){
