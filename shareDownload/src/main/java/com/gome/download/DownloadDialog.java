@@ -174,7 +174,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
         String videoName = DateUtil.getFileName(activity);
         String mVideoFileName = videoName + videoDownLoadBean.getVideoSuffix();
-        File videoPathParent = activity.getExternalFilesDir("");
+        File videoPathParent = activity.getExternalFilesDir("");//注意此处缓存路径不能为getExternalCacheDir 视频无法同步到系统相册
         String videoPath = videoPathParent.getPath() + "/share";
         File videoFile = new File(videoPath);
         if (!videoFile.exists()) {
@@ -558,9 +558,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
              * 所有子任务下载图片完成
              */
             Log.e(TAG, "所有图片子任务下载完成======" + mLoadOverPicNum);
+            isMaterialPicLoadOver = true;
             setMaterialPicLoadSuccess();
             mLoadOverPicNum = 0;
-            isMaterialPicLoadOver = true;
             for (int i = 0; i < mMaterialPicFile.size(); i++) {
                 BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
             }
