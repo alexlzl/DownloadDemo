@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -164,8 +163,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
         String fileName=DateUtil.getFileName(activity);
         mVideoFileName= fileName + videoDownLoadBean.getVideoSuffix();
-        File sd1 = Environment.getExternalStorageDirectory();
-        String path1 = sd1.getPath() + "/lfmf";
+        File sd1 = activity.getExternalFilesDir("");
+        String path1 = sd1.getPath() + "/share";
         File myfile1 = new File(path1);
         if (!myfile1.exists()) {
             myfile1.mkdir();
