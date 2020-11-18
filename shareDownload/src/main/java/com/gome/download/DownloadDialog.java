@@ -146,11 +146,11 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
     private IPermissionCallBack mIPermissionCallBack;
 
-    public void setPermissionCallBack(IPermissionCallBack iPermissionCallBack) {
+    protected void setPermissionCallBack(IPermissionCallBack iPermissionCallBack) {
         mIPermissionCallBack = iPermissionCallBack;
     }
 
-    public interface IPermissionCallBack {
+    protected interface IPermissionCallBack {
         void success();
 
         void fail();
@@ -159,10 +159,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     private long mVideoTaskId;
     private ShareResponseBean.VideoDownLoadBean mVideoDownLoadBean;
     private String mVideoLoadUrl;
-    private String mVideoFilePath;
-    private String mVideoFile;
-    private String mVideoFileName;
-    private File mVideoFileP;
+    private File mVideoFilePath;
 
     /**
      * @ describe 视频下载
@@ -175,19 +172,19 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mVideoDownLoadBean = videoDownLoadBean;
         mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
         mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
-        String fileName = DateUtil.getFileName(activity);
-        mVideoFileName = fileName + videoDownLoadBean.getVideoSuffix();
-        File sd1 = activity.getExternalFilesDir("");
-        String path1 = sd1.getPath() + "/share";
-        File myfile1 = new File(path1);
-        if (!myfile1.exists()) {
-            myfile1.mkdir();
+        String videoName = DateUtil.getFileName(activity);
+        String mVideoFileName = videoName + videoDownLoadBean.getVideoSuffix();
+        File videoPathParent = activity.getExternalFilesDir("");
+        String videoPath = videoPathParent.getPath() + "/share";
+        File videoFile = new File(videoPath);
+        if (!videoFile.exists()) {
+            videoFile.mkdir();
         }
-        mVideoFileP = new File(myfile1, mVideoFileName);
+        mVideoFilePath = new File(videoFile, mVideoFileName);
 
         mVideoTaskId = Aria.download(activity)
                 .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
-                .setFilePath(path1 + "/" + mVideoFileName) //设置文件保存的完整路径
+                .setFilePath(videoPath + "/" + mVideoFileName) //设置文件保存的完整路径
                 .create();   //创建并启动下载
     }
 
@@ -472,7 +469,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             //视频下载完成
             Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
             setVideoLoadSuccess();
-            BitmapUtil.saveVideoToSystem(mActivity, mVideoFileP);
+            BitmapUtil.saveVideoToSystem(mActivity, mVideoFilePath);
         }
 
     }
