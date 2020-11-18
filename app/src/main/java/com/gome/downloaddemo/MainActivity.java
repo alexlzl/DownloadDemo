@@ -9,13 +9,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arialyy.aria.core.Aria;
-import com.gome.download.F;
 import com.gome.download.FileByteManagerUtils;
 import com.gome.download.PermissionsManagerUtils;
 import com.gome.download.SDCardManagerUtils;
 import com.gome.download.ShareResponseBean;
 import com.gome.download.ShowDialogUtil;
 import com.gome.download.Url;
+import com.gome.download.VideoManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -67,9 +67,10 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        ShowDialogUtil showDialog=new ShowDialogUtil(this);
-        showDialog.showDialog(getSupportFragmentManager());
-        showDialog.startLoadResource(getShareResponseBean());
+//        ShowDialogUtil showDialog=new ShowDialogUtil(this);
+//        showDialog.showDialog(getSupportFragmentManager());
+//        showDialog.startLoadResource(getShareResponseBean());
+        ShowDialogUtil.getInstance(this).showDialog(getSupportFragmentManager(), getShareResponseBean());
 
     }
 
@@ -136,17 +137,17 @@ public class MainActivity extends AppCompatActivity {
 //        DownloadDialog d = new DownloadDialog();
 //        d.show(getSupportFragmentManager(),"aa");
 //      startActivity(new Intent(this,MainActivity2.class));
-        new F().downMp4(this);
+        new VideoManager().downMp4(this);
     }
 
-    public ShareResponseBean getShareResponseBean(){
-        ShareResponseBean shareResponseBean=new ShareResponseBean();
+    public ShareResponseBean getShareResponseBean() {
+        ShareResponseBean shareResponseBean = new ShareResponseBean();
         //构建素材图片对象
-        ShareResponseBean.ImageDownloadBean imageDownloadBean=new ShareResponseBean.ImageDownloadBean();
+        ShareResponseBean.ImageDownloadBean imageDownloadBean = new ShareResponseBean.ImageDownloadBean();
         imageDownloadBean.setDisplayeStr("素材图片");
-        List<ShareResponseBean.ImageDownloadBean.ImageListBean> listBeanList=new ArrayList<>();
-        for(int i=0;i< Url.PICS.length;i++){
-            ShareResponseBean.ImageDownloadBean.ImageListBean imageListBean=new ShareResponseBean.ImageDownloadBean.ImageListBean();
+        List<ShareResponseBean.ImageDownloadBean.ImageListBean> listBeanList = new ArrayList<>();
+        for (int i = 0; i < Url.PICS.length; i++) {
+            ShareResponseBean.ImageDownloadBean.ImageListBean imageListBean = new ShareResponseBean.ImageDownloadBean.ImageListBean();
             imageListBean.setImageUrl(Url.PICS[i]);
             imageListBean.setImageSuffix(".jpg");
             listBeanList.add(imageListBean);
@@ -154,18 +155,18 @@ public class MainActivity extends AppCompatActivity {
         imageDownloadBean.setImageList(listBeanList);
         shareResponseBean.setImageDownload(imageDownloadBean);
         //构建视频资源
-        ShareResponseBean.VideoDownLoadBean videoDownLoadBean=new ShareResponseBean.VideoDownLoadBean();
+        ShareResponseBean.VideoDownLoadBean videoDownLoadBean = new ShareResponseBean.VideoDownLoadBean();
         videoDownLoadBean.setDisplayeStr("视频");
         videoDownLoadBean.setVideoSuffix(".mp4");
         videoDownLoadBean.setVideoUrl(Url.URL2);
         shareResponseBean.setVideoDownLoad(videoDownLoadBean);
         //复制文案
-        ShareResponseBean.CopyStringBean copyStringBean=new ShareResponseBean.CopyStringBean();
+        ShareResponseBean.CopyStringBean copyStringBean = new ShareResponseBean.CopyStringBean();
         copyStringBean.setCopyStr("我是要复制的文案");
         copyStringBean.setDisplayeStr("文案已复制成功");
         shareResponseBean.setCopyString(copyStringBean);
         //小程序码
-        ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean=new ShareResponseBean.MiniProgramDownLaodBean();
+        ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean = new ShareResponseBean.MiniProgramDownLaodBean();
         miniProgramDownLaodBean.setDisplayeStr("小程序码图片");
         shareResponseBean.setMiniProgramDownLaod(miniProgramDownLaodBean);
         return shareResponseBean;
@@ -308,7 +309,6 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //
 //    }
-
     public void stopSingleDownload(View view) {
         Toast.makeText(this, "停止下载apk", Toast.LENGTH_LONG).show();
         if ("stop".equals(view.getTag())) {
@@ -318,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
             Aria.download(this)
                     .load(apkTaskId)
                     .resume();
-        } else if("start".equals(view.getTag())){
+        } else if ("start".equals(view.getTag())) {
             //默认停止下载
             Aria.download(this)
                     .load(apkTaskId)
@@ -328,12 +328,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void saveByte(View view ){
-        FileByteManagerUtils.writeBytesToFile(new File(  SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic/test.jpg"),bitmapToByte(R.drawable.test),true);
+    public void saveByte(View view) {
+        FileByteManagerUtils.writeBytesToFile(new File(SDCardManagerUtils.getSDCardCacheDir(MainActivity.this) + "/demos/file/pic/test.jpg"), bitmapToByte(R.drawable.test), true);
 
     }
 
-    public  byte[] bitmapToByte(int pic) {
+    public byte[] bitmapToByte(int pic) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), pic);
         //将Bitmap转换成字符串
 //        String string = null;

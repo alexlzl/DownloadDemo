@@ -16,16 +16,22 @@ public class ShowDialogUtil {
     private DownloadDialog mDownloadDialog;
     private Activity mActivity;
 
-    public ShowDialogUtil(Activity activity) {
+    public static ShowDialogUtil getInstance(Activity activity) {
+
+        return new ShowDialogUtil(activity);
+    }
+
+    private ShowDialogUtil(Activity activity) {
         mActivity = activity;
     }
 
-    public void showDialog(FragmentManager fragmentManager) {
+    public void showDialog(FragmentManager fragmentManager, ShareResponseBean shareResponseBean) {
         if (!ButtonUtils.isFastClick()) {
             return;
         }
         mDownloadDialog = new DownloadDialog();
         mDownloadDialog.showNow(fragmentManager, "DownloadDialog");
+        startLoadResource(shareResponseBean);
     }
 
     /**
@@ -35,7 +41,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void startLoadResource(final ShareResponseBean shareResponseBean) {
+    private void startLoadResource(final ShareResponseBean shareResponseBean) {
         loadCopyText(shareResponseBean.getCopyString());
         mDownloadDialog.setPermissionCallBack(new DownloadDialog.IPermissionCallBack() {
             @Override
@@ -63,7 +69,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
+    private void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
         ClipboardUtil.copyText(mActivity, copyStringBean.getCopyStr());
         mDownloadDialog.setCopyTextSuccess(copyStringBean.getCopyStr());
     }
@@ -75,7 +81,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void loadVideo(ShareResponseBean.VideoDownLoadBean videoDownLoadBean) {
+    private void loadVideo(ShareResponseBean.VideoDownLoadBean videoDownLoadBean) {
         mDownloadDialog.loadVideo(videoDownLoadBean, mActivity);
 
     }
@@ -87,7 +93,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
+    private void loadMiniProgram(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean) {
         mDownloadDialog.saveMiniProgramPic(bitmap, miniProgramDownLaodBean, mActivity);
     }
 
@@ -98,7 +104,7 @@ public class ShowDialogUtil {
      * @ param
      * @ return
      */
-    public void loadMaterialPic(ShareResponseBean.ImageDownloadBean imageDownloadBean) {
+    private void loadMaterialPic(ShareResponseBean.ImageDownloadBean imageDownloadBean) {
         mDownloadDialog.loadMaterialPic(imageDownloadBean, mActivity);
     }
 }

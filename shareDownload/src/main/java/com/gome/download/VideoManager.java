@@ -20,7 +20,7 @@ import java.net.URL;
  * @ describe
  * @ time 2020/11/18 10:51
  */
-public class F {
+public class VideoManager {
 
     public void downMp4(final Activity activity) {
         final ProgressDialog pd; // 进度条对话框
