@@ -132,7 +132,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
             @Override
             public void forbidPermissions() {
-
+                miPermissionCallBack.fail();
             }
         });
     }

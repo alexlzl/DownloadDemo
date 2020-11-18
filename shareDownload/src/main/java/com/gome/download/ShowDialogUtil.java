@@ -3,6 +3,7 @@ package com.gome.download;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -49,7 +50,7 @@ public class ShowDialogUtil {
 
             @Override
             public void fail() {
-
+                Toast.makeText(mActivity,"获取权限失败",Toast.LENGTH_LONG).show();
             }
         });
         mDownloadDialog.getPermission(mActivity);
