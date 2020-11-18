@@ -25,7 +25,6 @@ public class ShowDialogUtil {
             return;
         }
         mDownloadDialog = new DownloadDialog();
-//        mDownloadDialog.show(fragmentManager, "aa");
         mDownloadDialog.showNow(fragmentManager, "DownloadDialog");
     }
 
@@ -38,7 +37,7 @@ public class ShowDialogUtil {
      */
     public void startLoadResource(final ShareResponseBean shareResponseBean) {
         loadCopyText(shareResponseBean.getCopyString());
-        mDownloadDialog.setCall(new DownloadDialog.IPermissionCallBack() {
+        mDownloadDialog.setPermissionCallBack(new DownloadDialog.IPermissionCallBack() {
             @Override
             public void success() {
                 loadVideo(shareResponseBean.getVideoDownLoad());
@@ -50,15 +49,11 @@ public class ShowDialogUtil {
 
             @Override
             public void fail() {
-                Toast.makeText(mActivity,"获取权限失败",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity, "获取权限失败", Toast.LENGTH_LONG).show();
             }
         });
         mDownloadDialog.getPermission(mActivity);
-//        loadVideo(shareResponseBean.getVideoDownLoad());
-//        loadMaterialPic(shareResponseBean.getImageDownload());
-//        //for test
-//        Bitmap bitmap = BitmapFactory.decodeResource(mActivity.getResources(), R.drawable.test);
-//        loadMiniProgram(bitmap, shareResponseBean.getMiniProgramDownLaod());
+
     }
 
     /**

@@ -191,7 +191,7 @@ class BitmapUtil {
         return heightI;
     }
 
-    public static void save1(Activity activity,File file){
+    public static void saveVideoToSystem(Activity activity,File file){
         activity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + file)));
     }
 }
