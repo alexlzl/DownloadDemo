@@ -171,7 +171,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ return
      */
     public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
-        if(videoDownLoadBean!=null){
+        if(videoDownLoadBean!=null&&!TextUtils.isEmpty(videoDownLoadBean.getVideoUrl())){
             mVideoDownLoadBean = videoDownLoadBean;
             mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
             mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
@@ -275,7 +275,12 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setCopyTextSuccess(String content) {
         mCopyProcessIv.setImageResource(R.drawable.download_success);
-        mCopyTextTv.setText(content);
+        if(!TextUtils.isEmpty(content)){
+            mCopyTextTv.setText(String.format("%s已复制成功",content));
+        }else{
+            mCopyTextTv.setText(String.format("%s已复制成功","文案"));
+        }
+
         isCopyTextOver = true;
         checkIsAllTaskOver();
     }
@@ -287,9 +292,18 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ param
      * @ return
      */
-    public void setCopyTextFail() {
+    public void setCopyTextFail(ShareResponseBean.CopyStringBean copyStringBean) {
         mCopyProcessIv.setImageResource(R.drawable.download_error);
-        mCopyTextTv.setText("文案已复制失败");
+        if(copyStringBean==null){
+            mCopyTextTv.setText(String.format("%s已复制失败","文案"));
+        }else{
+            if(!TextUtils.isEmpty(copyStringBean.getDisplayeStr())){
+                mCopyTextTv.setText(String.format("%s已复制失败",copyStringBean.getDisplayeStr()));
+            }else{
+                mCopyTextTv.setText(String.format("%s已复制失败","文案"));
+            }
+        }
+
         isCopyTextOver = true;
         checkIsAllTaskOver();
     }
@@ -380,7 +394,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         if(mImageDownloadBean!=null&&!TextUtils.isEmpty( mImageDownloadBean.getDisplayeStr())){
             mMaterialPicTv.setText(String.format("%s下载失败(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
         }else{
-            mMaterialPicTv.setText("图片下载失败");
+            mMaterialPicTv.setText("素材图片下载失败");
         }
 
         checkIsAllTaskOver();
@@ -483,7 +497,9 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     @Download.onTaskFail
     protected void downloadTaskFail(DownloadTask task) {
-        Log.e(TAG, "Fail===========" + task.getKey());
+        if(task!=null){
+            Log.e(TAG, "Fail===========" + task.getKey());
+        }
         if (mVideoLoadUrl != null && mVideoLoadUrl.equals(task.getKey())) {
             //视频下载失败
             Log.e(TAG, "FAIL===========视频任务执行失败");

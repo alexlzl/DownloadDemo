@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
         //复制文案
         ShareResponseBean.CopyStringBean copyStringBean = new ShareResponseBean.CopyStringBean();
         copyStringBean.setCopyStr("我是要复制的文案");
-        copyStringBean.setDisplayeStr("文案已复制成功");
+        copyStringBean.setDisplayeStr("文案");
         shareResponseBean.setCopyString(copyStringBean);
         //小程序码
         ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean = new ShareResponseBean.MiniProgramDownLaodBean();

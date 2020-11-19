@@ -28,5 +28,5 @@ public class Url {
 
     };
 
-    public static final String URL2 = "http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161_.mp4";
+    public static final String URL2 = "http://vfx.mtime.cn/Video/2019/02/04/mp4/190204084208765161.mp4";
 }
