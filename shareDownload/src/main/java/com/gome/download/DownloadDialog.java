@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -170,23 +171,28 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ return
      */
     public void loadVideo(final ShareResponseBean.VideoDownLoadBean videoDownLoadBean, final Activity activity) {
-        mVideoDownLoadBean = videoDownLoadBean;
-        mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
-        mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
-        String videoName = DateUtil.getFileName(activity);
-        String mVideoFileName = videoName + videoDownLoadBean.getVideoSuffix();
-        File videoPathParent = activity.getExternalFilesDir("");//注意此处缓存路径不能为getExternalCacheDir 视频无法同步到系统相册
-        String videoPath = videoPathParent.getPath() + "/share";
-        File videoFile = new File(videoPath);
-        if (!videoFile.exists()) {
-            videoFile.mkdir();
-        }
-        mVideoFilePath = new File(videoFile, mVideoFileName);
+        if(videoDownLoadBean!=null){
+            mVideoDownLoadBean = videoDownLoadBean;
+            mVideoLoadTv.setText(String.format("%s正在下载", videoDownLoadBean.getDisplayeStr()));
+            mVideoLoadUrl = videoDownLoadBean.getVideoUrl();
+            String videoName = DateUtil.getFileName(activity);
+            String mVideoFileName = videoName + videoDownLoadBean.getVideoSuffix();
+            File videoPathParent = activity.getExternalFilesDir("");//注意此处缓存路径不能为getExternalCacheDir 视频无法同步到系统相册
+            String videoPath = videoPathParent.getPath() + "/share";
+            File videoFile = new File(videoPath);
+            if (!videoFile.exists()) {
+                videoFile.mkdir();
+            }
+            mVideoFilePath = new File(videoFile, mVideoFileName);
 
-        mVideoTaskId = Aria.download(activity)
-                .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
-                .setFilePath(videoPath + "/" + mVideoFileName) //设置文件保存的完整路径
-                .create();   //创建并启动下载
+            mVideoTaskId = Aria.download(activity)
+                    .load(videoDownLoadBean.getVideoUrl())     //读取下载地址
+                    .setFilePath(videoPath + "/" + mVideoFileName) //设置文件保存的完整路径
+                    .create();   //创建并启动下载
+        }else{
+            setVideoLoadFail();
+        }
+
     }
 
     //图片素材地址
@@ -207,28 +213,33 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ return
      */
     public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
-        mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
-        mImageDownloadBean = imageDownloadBean;
-        mMaterialPicUrlList = new ArrayList<>(); // 创建一个http url集合
-        mMaterialPicFileName = new ArrayList<>();
-        mMaterialPicFile = new ArrayList<>();
-        String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
-        FileManagerUtils.createDir(folderName);
-        mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), 0, imageDownloadBean.getImageList().size()));
-        for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
+        if(imageDownloadBean!=null&&imageDownloadBean.getImageList()!=null&&imageDownloadBean.getImageList().size()>0){
+            mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
+            mImageDownloadBean = imageDownloadBean;
+            mMaterialPicUrlList = new ArrayList<>(); // 创建一个http url集合
+            mMaterialPicFileName = new ArrayList<>();
+            mMaterialPicFile = new ArrayList<>();
+            String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
+            FileManagerUtils.createDir(folderName);
+            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), 0, imageDownloadBean.getImageList().size()));
+            for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
 
-            mMaterialPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
-            String fileName = DateUtil.getFileName(activity) + imageDownloadBean.getImageList().get(i).getImageSuffix();
-            mMaterialPicFileName.add(fileName);
-            File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + fileName);
-            mMaterialPicFile.add(file);
+                mMaterialPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
+                String fileName = DateUtil.getFileName(activity) + imageDownloadBean.getImageList().get(i).getImageSuffix();
+                mMaterialPicFileName.add(fileName);
+                File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + fileName);
+                mMaterialPicFile.add(file);
 
-            long videoTaskId = Aria.download(activity)
-                    .load(mMaterialPicUrlList.get(i))     //读取下载地址
-                    .setFilePath(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + "/" + fileName) //设置文件保存的完整路径
-                    .create();   //创建并启动下载
-            mMaterialPicTaskId.add(videoTaskId);
+                long videoTaskId = Aria.download(activity)
+                        .load(mMaterialPicUrlList.get(i))     //读取下载地址
+                        .setFilePath(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + "/" + fileName) //设置文件保存的完整路径
+                        .create();   //创建并启动下载
+                mMaterialPicTaskId.add(videoTaskId);
+            }
+        }else{
+            setMaterialPicLoadFail();
         }
+
 
 
     }
@@ -241,13 +252,18 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ return
      */
     public void saveMiniProgramPic(Bitmap bitmap, ShareResponseBean.MiniProgramDownLaodBean miniProgramDownLaodBean, Activity activity) {
-        String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH;
-        FileManagerUtils.createDir(folderName);
-        String picName = DateUtil.getFileName(activity) + ".jpg";
-        File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH + picName);
-        FileByteManagerUtils.writeBytesToFile(file, BitmapUtil.bitmapToByte(bitmap), true);
-        setMiniProgramLoadSuccess(miniProgramDownLaodBean);
-        BitmapUtil.saveImageToSystemGallery(activity, file, picName);
+        if(bitmap!=null){
+            String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH;
+            FileManagerUtils.createDir(folderName);
+            String picName = DateUtil.getFileName(activity) + ".jpg";
+            File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MINI_PROGRAM_PIC_PATH + picName);
+            FileByteManagerUtils.writeBytesToFile(file, BitmapUtil.bitmapToByte(bitmap), true);
+            setMiniProgramLoadSuccess(miniProgramDownLaodBean);
+            BitmapUtil.saveImageToSystemGallery(activity, file, picName);
+        }else{
+            setMiniProgramLoadFail(miniProgramDownLaodBean);
+        }
+
     }
 
     /**
@@ -273,6 +289,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setCopyTextFail() {
         mCopyProcessIv.setImageResource(R.drawable.download_error);
+        mCopyTextTv.setText("文案已复制失败");
         isCopyTextOver = true;
         checkIsAllTaskOver();
     }
@@ -286,7 +303,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setVideoLoadSuccess() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_success);
-        mVideoLoadTv.setText(String.format("%s下载成功", mVideoDownLoadBean.getDisplayeStr()));
+        mVideoLoadTv.setText(String.format("%s已下载成功", mVideoDownLoadBean.getDisplayeStr()));
         isLoadVideoOver = true;
         checkIsAllTaskOver();
     }
@@ -300,7 +317,12 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setVideoLoadFail() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_error);
-        mVideoLoadTv.setText(String.format("%s下载失败", mVideoDownLoadBean.getDisplayeStr()));
+        if(mVideoDownLoadBean!=null&&! TextUtils.isEmpty(mVideoDownLoadBean.getDisplayeStr())){
+            mVideoLoadTv.setText(String.format("%s已下载失败", mVideoDownLoadBean.getDisplayeStr()));
+        }else{
+            mVideoLoadTv.setText(String.format("%s已下载失败","视频"));
+        }
+
         isLoadVideoOver = true;
         checkIsAllTaskOver();
     }
@@ -355,7 +377,12 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setMaterialPicLoadFail() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_error);
-        mMaterialPicTv.setText(String.format("%s下载失败(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
+        if(mImageDownloadBean!=null&&!TextUtils.isEmpty( mImageDownloadBean.getDisplayeStr())){
+            mMaterialPicTv.setText(String.format("%s下载失败(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
+        }else{
+            mMaterialPicTv.setText("图片下载失败");
+        }
+
         checkIsAllTaskOver();
     }
 

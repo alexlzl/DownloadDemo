@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         showDialogUtil .showDialog(getSupportFragmentManager(), getShareResponseBean());
         //for test js回调获取bitmap
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), com.gome.download.R.drawable.test);
+//        Bitmap bitmap=null;
         showDialogUtil. loadMiniProgram(bitmap, getShareResponseBean().getMiniProgramDownLaod());
     }
 

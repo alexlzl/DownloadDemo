@@ -2,6 +2,7 @@ package com.gome.download;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -66,8 +67,13 @@ public class ShowDialogUtil {
      * @ return
      */
     private void loadCopyText(ShareResponseBean.CopyStringBean copyStringBean) {
-        ClipboardUtil.copyText(mActivity, copyStringBean.getCopyStr());
-        mDownloadDialog.setCopyTextSuccess(copyStringBean.getCopyStr());
+        if(copyStringBean==null||TextUtils.isEmpty(copyStringBean.getCopyStr())){
+            mDownloadDialog.setCopyTextFail();
+        }else{
+            ClipboardUtil.copyText(mActivity, copyStringBean.getCopyStr());
+            mDownloadDialog.setCopyTextSuccess(copyStringBean.getCopyStr());
+        }
+
     }
 
     /**
