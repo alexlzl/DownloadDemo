@@ -53,6 +53,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Aria.download(this).register();
+        Aria.get(context).getDownloadConfig().setReTryInterval(1000).setReTryNum(5);
         mActivity = (Activity) context;
     }
 
@@ -189,13 +190,14 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     }
 
     //图片素材地址
-    private List<String> mPicUrlList;
+    private List<String> mMaterialPicUrlList;
     private long mPicTaskId;
     private ShareResponseBean.ImageDownloadBean mImageDownloadBean;
     //图片素材名称
     private List<String> mMaterialPicFileName;
     //图片素材对应文件
     private List<File> mMaterialPicFile;
+    private List<Long> mMaterialPicTaskId = new ArrayList<>();
 
     /**
      * @ describe 图片素材下载
@@ -207,24 +209,26 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void loadMaterialPic(final ShareResponseBean.ImageDownloadBean imageDownloadBean, final Activity activity) {
         mMaterialPicTv.setText(String.format("%s正在下载", imageDownloadBean.getDisplayeStr()));
         mImageDownloadBean = imageDownloadBean;
-        mPicUrlList = new ArrayList<>(); // 创建一个http url集合
+        mMaterialPicUrlList = new ArrayList<>(); // 创建一个http url集合
         mMaterialPicFileName = new ArrayList<>();
         mMaterialPicFile = new ArrayList<>();
+        String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
+        FileManagerUtils.createDir(folderName);
         for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
 
-            mPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
+            mMaterialPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
             String fileName = DateUtil.getFileName(activity) + imageDownloadBean.getImageList().get(i).getImageSuffix();
             mMaterialPicFileName.add(fileName);
             File file = new File(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + fileName);
             mMaterialPicFile.add(file);
+
+            long videoTaskId = Aria.download(activity)
+                    .load(mMaterialPicUrlList.get(i))     //读取下载地址
+                    .setFilePath(SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH + "/" + fileName) //设置文件保存的完整路径
+                    .create();   //创建并启动下载
+            mMaterialPicTaskId.add(videoTaskId);
         }
-        String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
-        FileManagerUtils.createDir(folderName);
-        mPicTaskId = Aria.download(activity)
-                .loadGroup(mPicUrlList) // 设置url集合
-                .setDirPath(folderName).setSubFileName(mMaterialPicFileName)  // 设置该组合任务的文件夹路径
-                .unknownSize().ignoreFilePathOccupy()  // 如果你不知道组合任务的长度请设置这个，需要注意的是，恢复任务时也有加上这个
-                .create();
+
 
     }
 
@@ -337,7 +341,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setMaterialPicLoadSuccess() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_success);
-        mMaterialPicTv.setText(String.format("%s下载成功(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
+        mMaterialPicTv.setText(String.format("%s下载成功(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
         checkIsAllTaskOver();
     }
 
@@ -350,6 +354,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setMaterialPicLoadFail() {
         mMaterialPicLoadProcessIv.setImageResource(R.drawable.download_error);
+        mMaterialPicTv.setText(String.format("%s下载失败(%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
         checkIsAllTaskOver();
     }
 
@@ -456,7 +461,28 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             Log.e(TAG, "FAIL===========视频任务执行失败");
             setVideoLoadFail();
         }
+
+        if (mMaterialPicUrlList != null && mMaterialPicUrlList.size() > 0 && mMaterialPicUrlList.contains(task.getKey())) {
+            //素材图片任务执行完成
+            mMaterialPicLoadFailNum++;
+            mLoadOverPicNum++;
+            Log.e(TAG, "素材图片任务执行失败===========" + task.getPercent() + "==" + task.getKey());
+            if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum == mMaterialPicUrlList.size()) {
+                //所有图片任务执行失败表示任务失败
+                isMaterialPicLoadOver = true;
+                setMaterialPicLoadFail();
+                Log.e(TAG, "所有素材图片任务执行失败===========");
+            }
+
+        }
     }
+
+    //素材图片任务组执行完成的数量(成功+失败)
+    private int mLoadOverPicNum;
+    //素材图片下载成功的次数
+    private int mMaterialPicLoadSuccessNum;
+    //素材图片下载失败的次数
+    private int mMaterialPicLoadFailNum;
 
     /**
      * @ describe 任务完成时的注解，任务完成时进行回调
@@ -467,13 +493,39 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     @Download.onTaskComplete
     protected void taskComplete(DownloadTask task) {
-        //在这里处理任务完成的状态
-        Log.e(TAG, "Over===========" + task.getPercent() + task.getKey());
+
+        //视频任务===================1
         if (mVideoLoadUrl != null && mVideoLoadUrl.equals(task.getKey())) {
             //视频下载完成
-            Log.e(TAG, "Over===========" + task.getPercent() + "设置加载视频成功======");
+            Log.e(TAG, "视频任务执行完成===========" + task.getPercent());
             setVideoLoadSuccess();
             BitmapUtil.saveVideoToSystem(mActivity, mVideoFilePath);
+        }
+        //图片任务=====================2
+        if (mMaterialPicUrlList != null && mMaterialPicUrlList.size() > 0 && mMaterialPicUrlList.contains(task.getKey())) {
+            //素材图片任务执行完成
+            Log.e(TAG, "素材图片任务完成===========" + task.getPercent() + "==" + task.getKey());
+            mMaterialPicLoadSuccessNum++;
+            mLoadOverPicNum++;
+            if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum != mMaterialPicUrlList.size()) {
+                //所有图片任务执行完成
+                isMaterialPicLoadOver = true;
+                Log.e(TAG, "所有素材图片任务执行完成===========");
+                setMaterialPicLoadSuccess();
+                //进行系统相册同步
+                for (int i = 0; i < mMaterialPicFile.size(); i++) {
+                    BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
+                }
+                mLoadOverPicNum = 0;
+            } else if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum == mMaterialPicUrlList.size()) {
+                //所有图片任务执行失败表示任务失败
+                isMaterialPicLoadOver = true;
+                setMaterialPicLoadFail();
+                Log.e(TAG, "所有素材图片任务执行失败===========");
+            } else if (mLoadOverPicNum < mMaterialPicUrlList.size()) {
+                //图片任务未都执行完成==========下载中
+                mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
+            }
         }
 
     }
@@ -515,9 +567,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
 
     }
 
-    private List<String> mFinishedMaterialPic=new ArrayList<>();
-    //素材图片下载失败的次数
-    private int mMaterialPicLoadFailNum;
+    private List<String> mFinishedMaterialPic = new ArrayList<>();
+
     /**
      * @ describe 图片数组子任务下载失败回调
      * @author lzl
@@ -527,35 +578,35 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     @DownloadGroup.onSubTaskFail
     void onSubTaskFail(DownloadGroupTask groupTask, DownloadEntity subEntity) {
-        if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
-            if(mFinishedMaterialPic.contains(subEntity.getKey())){
-                Log.e(TAG, "下载失败图片已经存在集合======" +subEntity.getKey());
-              return;
-            }else{
-                Log.e(TAG, "下载失败图片已经存在集合======" +subEntity.getKey());
+        if (mMaterialPicUrlList != null && subEntity != null && mMaterialPicUrlList.contains(subEntity.getKey())) {
+            if (mFinishedMaterialPic.contains(subEntity.getKey())) {
+                Log.e(TAG, "下载失败图片已经存在集合======" + subEntity.getKey());
+                return;
+            } else {
+                Log.e(TAG, "下载失败图片已经存在集合======" + subEntity.getKey());
                 mFinishedMaterialPic.add(subEntity.getKey());
             }
 
             mLoadOverPicNum++;
             mMaterialPicLoadFailNum++;
 
-            Log.e(TAG, "图片子任务失败==失败次数==="+mMaterialPicLoadFailNum + "==" + subEntity.getKey());
-            if (mPicUrlList.size() == mLoadOverPicNum) {
+            Log.e(TAG, "图片子任务失败==失败次数===" + mMaterialPicLoadFailNum + "==" + subEntity.getKey());
+            if (mMaterialPicUrlList.size() == mLoadOverPicNum) {
                 /**
                  * 所有图片子任务执行完成==============
                  */
                 isMaterialPicLoadOver = true;
-                if(mMaterialPicLoadFailNum!=mPicUrlList.size()){
+                if (mMaterialPicLoadFailNum != mMaterialPicUrlList.size()) {
                     //非所有图片下载失败表示成功
                     setMaterialPicLoadSuccess();
-                }else{
+                } else {
                     //所有图片下载失败显示失败视图
                     setMaterialPicLoadFail();
                 }
 
                 mLoadOverPicNum = 0;
-                mMaterialPicLoadFailNum=0;
-                mMaterialPicLoadSuccessNum=0;
+                mMaterialPicLoadFailNum = 0;
+                mMaterialPicLoadSuccessNum = 0;
             }
         }
     }
@@ -567,19 +618,16 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      * @ param
      * @ return
      */
-    //素材图片任务组执行完成的数量(成功+失败)
-    private int mLoadOverPicNum;
-    //素材图片下载成功的次数
-    private int mMaterialPicLoadSuccessNum;
+
     @DownloadGroup.onSubTaskComplete
     void onSubTaskComplete(DownloadGroupTask groupTask, DownloadEntity subEntity) {
         // 子任务完成的回调
 
-        if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
-            if(mFinishedMaterialPic.contains(subEntity.getKey())){
-                Log.e(TAG, "下载完成图片已经存在集合======" +subEntity.getKey());
+        if (mMaterialPicUrlList != null && subEntity != null && mMaterialPicUrlList.contains(subEntity.getKey())) {
+            if (mFinishedMaterialPic.contains(subEntity.getKey())) {
+                Log.e(TAG, "下载完成图片已经存在集合======" + subEntity.getKey());
                 return;
-            }else {
+            } else {
                 Log.e(TAG, "下载完成图片添加集合======" + subEntity.getKey());
                 mFinishedMaterialPic.add(subEntity.getKey());
             }
@@ -587,7 +635,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             mMaterialPicLoadSuccessNum++;
             mLoadOverPicNum++;
             Log.e(TAG, "某个子图片下载完成======成功次数==" + mMaterialPicLoadSuccessNum + "==" + subEntity.getKey());
-            if (mPicUrlList != null && mPicUrlList.size() == mLoadOverPicNum) {
+            if (mMaterialPicUrlList != null && mMaterialPicUrlList.size() == mLoadOverPicNum) {
                 /**
                  * 所有子任务下载图片完成====================
                  */
@@ -595,19 +643,17 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
                 isMaterialPicLoadOver = true;
                 setMaterialPicLoadSuccess();
                 mLoadOverPicNum = 0;
-                mMaterialPicLoadSuccessNum=0;
-                mMaterialPicLoadFailNum=0;
+                mMaterialPicLoadSuccessNum = 0;
+                mMaterialPicLoadFailNum = 0;
                 //进行系统相册同步
                 for (int i = 0; i < mMaterialPicFile.size(); i++) {
                     BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
                 }
 
             } else {
-                mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
+                mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mMaterialPicUrlList.size()));
             }
         }
-
-
 
 
     }
@@ -623,6 +669,10 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         Log.e(TAG, "检测是否所有任务完成" + "isLoadVideoOver==" + isLoadVideoOver + "==isMiniProgramLoadOver==" + isMiniProgramLoadOver + "==isMaterialPicLoadOver==" + isMaterialPicLoadOver + "==isCopyTextOver==" + isCopyTextOver);
         if (isLoadVideoOver && isMiniProgramLoadOver && isMaterialPicLoadOver && isCopyTextOver) {
             showShareView();
+            isLoadVideoOver=false;
+            isMiniProgramLoadOver=false;
+            isMaterialPicLoadOver=false;
+            isCopyTextOver=false;
         }
     }
 
