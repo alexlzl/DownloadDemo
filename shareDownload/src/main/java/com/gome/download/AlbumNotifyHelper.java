@@ -15,12 +15,7 @@ import android.provider.MediaStore;
 
 import java.io.File;
 
-/**
- * CreateAt : 2017/5/24
- * Describe : 相册更新通知帮助类
- * 创建时间单位ms
- * 视频时长单位ms
- */
+
 public class AlbumNotifyHelper {
 
     public static final String TAG = AlbumNotifyHelper.class.getSimpleName();

@@ -21,10 +21,17 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * 文件相关工具类
- * 如：递归获取文件大小,格式化单位,删除文件或文件夹,压缩文件,
- * 创建一个JPEG格式的图片文件,拷贝文件
+ * @ describe 文件相关工具类
+ *   如：递归获取文件大小,格式化单位,删除文件或文件夹,压缩文件,
+ *   创建一个JPEG格式的图片文件,拷贝文件
  *
+ * @author lzl
+ *
+ * @ time 2020/11/19 16:09
+ *
+ * @ param
+ *
+ * @ return
  */
 public class FileUtils {
     /**
