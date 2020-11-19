@@ -214,6 +214,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         mMaterialPicFile = new ArrayList<>();
         String folderName = SDCardManagerUtils.getSDCardCacheDir(activity) + MATERIAL_PIC_PATH;
         FileManagerUtils.createDir(folderName);
+        mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), 0, imageDownloadBean.getImageList().size()));
         for (int i = 0; i < imageDownloadBean.getImageList().size(); i++) {
 
             mMaterialPicUrlList.add(imageDownloadBean.getImageList().get(i).getImageUrl());  // 添加一个视频地址
@@ -466,12 +467,20 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             //素材图片任务执行完成
             mMaterialPicLoadFailNum++;
             mLoadOverPicNum++;
-            Log.e(TAG, "素材图片任务执行失败===========" + task.getPercent() + "==" + task.getKey());
+
             if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum == mMaterialPicUrlList.size()) {
                 //所有图片任务执行失败表示任务失败
                 isMaterialPicLoadOver = true;
                 setMaterialPicLoadFail();
-                Log.e(TAG, "所有素材图片任务执行失败===========");
+                Log.e(TAG, "所有素材图片任务执行失败==========="+mMaterialPicLoadFailNum);
+            }else if(mLoadOverPicNum == mMaterialPicUrlList.size()){
+                Log.e(TAG, "所有素材图片任务执行完成=====失败次数"+mMaterialPicLoadFailNum+"执行完总任务次数=="+mLoadOverPicNum);
+                isMaterialPicLoadOver = true;
+                setMaterialPicLoadSuccess();
+                //进行系统相册同步
+                for (int i = 0; i < mMaterialPicFile.size(); i++) {
+                    BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
+                }
             }
 
         }
@@ -510,14 +519,14 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
             if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum != mMaterialPicUrlList.size()) {
                 //所有图片任务执行完成
                 isMaterialPicLoadOver = true;
-                Log.e(TAG, "所有素材图片任务执行完成===========");
+                Log.e(TAG, "所有素材图片任务执行完成=====失败次数"+mMaterialPicLoadFailNum+"执行完总任务次数=="+mLoadOverPicNum);
                 setMaterialPicLoadSuccess();
                 //进行系统相册同步
                 for (int i = 0; i < mMaterialPicFile.size(); i++) {
                     BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
                 }
                 mLoadOverPicNum = 0;
-            } else if (mLoadOverPicNum == mMaterialPicUrlList.size() && mMaterialPicLoadFailNum == mMaterialPicUrlList.size()) {
+            } else if (mLoadOverPicNum == mMaterialPicUrlList.size()) {
                 //所有图片任务执行失败表示任务失败
                 isMaterialPicLoadOver = true;
                 setMaterialPicLoadFail();
