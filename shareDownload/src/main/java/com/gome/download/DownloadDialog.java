@@ -53,7 +53,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         Aria.download(this).register();
-        Aria.get(context).getDownloadConfig().setReTryInterval(1000).setReTryNum(5);
+        Aria.get(context).getDownloadConfig().setReTryInterval(1000).setReTryNum(2);
         mActivity = (Activity) context;
     }
 
