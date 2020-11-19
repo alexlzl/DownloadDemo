@@ -295,6 +295,7 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
      */
     public void setVideoLoadFail() {
         mVideoLoadProcessIv.setImageResource(R.drawable.download_error);
+        mVideoLoadTv.setText(String.format("%s下载失败", mVideoDownLoadBean.getDisplayeStr()));
         isLoadVideoOver = true;
         checkIsAllTaskOver();
     }
@@ -513,6 +514,8 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     void onSubTaskRunning(DownloadGroupTask groupTask, DownloadEntity subEntity) {
 
     }
+
+    private List<String> mFinishedMaterialPic=new ArrayList<>();
     //素材图片下载失败的次数
     private int mMaterialPicLoadFailNum;
     /**
@@ -525,8 +528,17 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
     @DownloadGroup.onSubTaskFail
     void onSubTaskFail(DownloadGroupTask groupTask, DownloadEntity subEntity) {
         if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
+            if(mFinishedMaterialPic.contains(subEntity.getKey())){
+                Log.e(TAG, "下载失败图片已经存在集合======" +subEntity.getKey());
+              return;
+            }else{
+                Log.e(TAG, "下载失败图片已经存在集合======" +subEntity.getKey());
+                mFinishedMaterialPic.add(subEntity.getKey());
+            }
+
             mLoadOverPicNum++;
             mMaterialPicLoadFailNum++;
+
             Log.e(TAG, "图片子任务失败==失败次数==="+mMaterialPicLoadFailNum + "==" + subEntity.getKey());
             if (mPicUrlList.size() == mLoadOverPicNum) {
                 /**
@@ -564,30 +576,38 @@ public class DownloadDialog extends DialogFragment implements View.OnClickListen
         // 子任务完成的回调
 
         if (mPicUrlList != null && subEntity != null && mPicUrlList.contains(subEntity.getKey())) {
+            if(mFinishedMaterialPic.contains(subEntity.getKey())){
+                Log.e(TAG, "下载完成图片已经存在集合======" +subEntity.getKey());
+                return;
+            }else {
+                Log.e(TAG, "下载完成图片添加集合======" + subEntity.getKey());
+                mFinishedMaterialPic.add(subEntity.getKey());
+            }
+
             mMaterialPicLoadSuccessNum++;
             mLoadOverPicNum++;
             Log.e(TAG, "某个子图片下载完成======成功次数==" + mMaterialPicLoadSuccessNum + "==" + subEntity.getKey());
+            if (mPicUrlList != null && mPicUrlList.size() == mLoadOverPicNum) {
+                /**
+                 * 所有子任务下载图片完成====================
+                 */
+                Log.e(TAG, "所有图片子任务下载完成======" + mLoadOverPicNum);
+                isMaterialPicLoadOver = true;
+                setMaterialPicLoadSuccess();
+                mLoadOverPicNum = 0;
+                mMaterialPicLoadSuccessNum=0;
+                mMaterialPicLoadFailNum=0;
+                //进行系统相册同步
+                for (int i = 0; i < mMaterialPicFile.size(); i++) {
+                    BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
+                }
 
-        }
-
-        if (mPicUrlList != null && mPicUrlList.size() == mLoadOverPicNum) {
-            /**
-             * 所有子任务下载图片完成====================
-             */
-            Log.e(TAG, "所有图片子任务下载完成======" + mLoadOverPicNum);
-            isMaterialPicLoadOver = true;
-            setMaterialPicLoadSuccess();
-            mLoadOverPicNum = 0;
-            mMaterialPicLoadSuccessNum=0;
-            mMaterialPicLoadFailNum=0;
-            //进行系统相册同步
-            for (int i = 0; i < mMaterialPicFile.size(); i++) {
-                BitmapUtil.saveImageToSystemGallery(mActivity, mMaterialPicFile.get(i), mMaterialPicFileName.get(i));
+            } else {
+                mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
             }
-
-        } else {
-            mMaterialPicTv.setText(String.format("%s正在下载 (%d/%d)", mImageDownloadBean.getDisplayeStr(), mMaterialPicLoadSuccessNum, mPicUrlList.size()));
         }
+
+
 
 
     }
